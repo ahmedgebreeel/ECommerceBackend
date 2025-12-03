@@ -1,6 +1,8 @@
-
 using Microsoft.EntityFrameworkCore;
 using MyApp.API.Data;
+using MyApp.API.Interfaces;
+using MyApp.API.Mappings;
+using MyApp.API.Services;
 
 namespace MyApp.API
 {
@@ -15,7 +17,15 @@ namespace MyApp.API
             //Register DbConext
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("constr"))
-                );
+            );
+
+            //Register Automapper
+            builder.Services.AddAutoMapper(cfg =>
+                cfg.AddProfile<MappingProfile>()
+            );
+
+            //Register Service Layer
+            builder.Services.AddScoped<IBrandService, BrandService>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -34,8 +44,6 @@ namespace MyApp.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-            app.UseStaticFiles();
 
             app.MapControllers();
 
