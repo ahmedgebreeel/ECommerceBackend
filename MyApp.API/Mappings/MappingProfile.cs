@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MyApp.API.DTOs.Brands;
 using MyApp.API.DTOs.Categories;
+using MyApp.API.DTOs.Products;
 using MyApp.API.Entities;
 
 namespace MyApp.API.Mappings
@@ -18,6 +19,11 @@ namespace MyApp.API.Mappings
             CreateMap<Category, CategoryDto>();
             CreateMap<CreateCategoryDto, Category>();
             CreateMap<UpdateCategoryDto, Category>();
+
+            //Product Mapping
+            CreateMap<Product, ProductDto>();
+            CreateMap<CreateProductDto, Product>();
+            CreateMap<UpdateProductDto, Product>();
 
         }
     }

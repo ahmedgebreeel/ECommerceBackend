@@ -8,9 +8,13 @@ namespace MyApp.API.Data.Config
     {
         public void Configure(EntityTypeBuilder<ProductImage> builder)
         {
-            builder.Property(i => i.ImageUrl)
+            builder.Property(pi => pi.ImageUrl)
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(500);
+
+            builder.HasIndex(pi => pi.ProductId)
+                .IsUnique()
+                .HasFilter("[IsMain] = 1");
 
             builder.HasData(
                 // Product 1
