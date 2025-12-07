@@ -9,10 +9,11 @@ using MyApp.API.Interfaces;
 
 namespace MyApp.API.Services
 {
-    public class BrandService(AppDbContext context, IMapper mapper) : IBrandService
+    public class BrandService(AppDbContext context, IMapper mapper, ILogger<BrandService> logger) : IBrandService
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
+        private readonly ILogger<BrandService> _logger = logger;
 
         public async Task<IEnumerable<BrandDto>> GetAllAsync()
         {
@@ -38,6 +39,8 @@ namespace MyApp.API.Services
             var brandToAdd = _mapper.Map<Brand>(dto);
             _context.Brands.Add(brandToAdd);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Brand added with id = {id}.", brandToAdd.Id);
             return _mapper.Map<BrandDto>(brandToAdd);
 
         }
@@ -48,6 +51,8 @@ namespace MyApp.API.Services
                 ?? throw new NotFoundException("Brand does not exist");
             _mapper.Map(dto, brandToUpdate);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Brand updated with id = {id}.", brandToUpdate.Id);
             return _mapper.Map<BrandDto>(brandToUpdate);
         }
 
@@ -59,6 +64,8 @@ namespace MyApp.API.Services
                 throw new ConflictException("Cannot delete a brand with existing products.");
             _context.Brands.Remove(brandToDelete);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Brand deleted with id = {id}.", brandToDelete.Id);
         }
     }
 }

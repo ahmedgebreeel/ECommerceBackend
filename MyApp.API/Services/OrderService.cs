@@ -10,10 +10,11 @@ using MyApp.API.Interfaces;
 
 namespace MyApp.API.Services
 {
-    public class OrderService(AppDbContext context, IMapper mapper) : IOrderService
+    public class OrderService(AppDbContext context, IMapper mapper, ILogger<OrderService> logger) : IOrderService
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
+        private readonly ILogger<OrderService> _logger = logger;
         public async Task<IEnumerable<OrderDto>> GetAllAsync()
         {
             var orders = await _context.Orders
@@ -80,6 +81,8 @@ namespace MyApp.API.Services
 
             // Save everything at once → atomic transaction
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Order added with id = {orderId}.", orderToCreate.Id);
 
             return _mapper.Map<OrderDto>(orderToCreate);
         }
@@ -93,6 +96,8 @@ namespace MyApp.API.Services
 
             orderToUpdate.Status = dto.Status;
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Order updated with id = {orderId}.", orderToUpdate.Id);
             return _mapper.Map<OrderDto>(orderToUpdate);
         }
 
@@ -102,6 +107,8 @@ namespace MyApp.API.Services
                 ?? throw new NotFoundException("Invalid OrderId");
             _context.Orders.Remove(orderToDelete);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Order deleted with id = {orderId}.", orderToDelete.Id);
         }
     }
 }

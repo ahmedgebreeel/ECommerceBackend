@@ -9,10 +9,11 @@ using MyApp.API.Interfaces;
 
 namespace MyApp.API.Services
 {
-    public class ProductService(AppDbContext context, IMapper mapper) : IProductService
+    public class ProductService(AppDbContext context, IMapper mapper, ILogger<ProductService> logger) : IProductService
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
+        private readonly ILogger<ProductService> _logger = logger;
 
         public async Task<IEnumerable<ProductDto>> GetAllAsync()
         {
@@ -48,6 +49,8 @@ namespace MyApp.API.Services
             var productToAdd = _mapper.Map<Product>(dto);
             _context.Products.Add(productToAdd);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Product added with id = {id}.", productToAdd.Id);
             return _mapper.Map<ProductDto>(productToAdd);
         }
 
@@ -69,6 +72,8 @@ namespace MyApp.API.Services
 
             _mapper.Map(dto, productToUpdate);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Product updated with id = {id}.", productToUpdate.Id);
             return _mapper.Map<ProductDto>(productToUpdate);
         }
 
@@ -78,6 +83,8 @@ namespace MyApp.API.Services
                 ?? throw new NotFoundException("Product does not exist.");
             _context.Products.Remove(productToDelete);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Product deleted with id = {id}.", productToDelete.Id);
         }
 
 

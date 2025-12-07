@@ -9,10 +9,11 @@ using MyApp.API.Interfaces;
 
 namespace MyApp.API.Services
 {
-    public class ProductImageService(AppDbContext context, IMapper mapper) : IProductImageService
+    public class ProductImageService(AppDbContext context, IMapper mapper, ILogger<ProductImageService> logger) : IProductImageService
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
+        private readonly ILogger<ProductImageService> _logger = logger;
 
         public async Task<IEnumerable<ProductImageDto>> GetAllAsync(int productId)
         {
@@ -36,6 +37,8 @@ namespace MyApp.API.Services
             productImageToAdd.ProductId = productId;
             _context.ProductImages.Add(productImageToAdd);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Image added with id = {imageId} for product = {productId}.", productImageToAdd.Id, productImageToAdd.ProductId);
             return _mapper.Map<ProductImageDto>(productImageToAdd);
 
         }
@@ -67,6 +70,8 @@ namespace MyApp.API.Services
             product.ImageUrl = image.ImageUrl;
 
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Image with id = {imageId} for product = {productId} is set as main.", image.Id, image.ProductId);
 
         }
 
@@ -87,6 +92,9 @@ namespace MyApp.API.Services
 
             _context.ProductImages.Remove(image);
             await _context.SaveChangesAsync();
+
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Image deleted with id = {imageId} for product = {productId}.", image.Id, image.ProductId);
         }
     }
 }

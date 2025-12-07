@@ -9,10 +9,11 @@ using MyApp.API.Interfaces;
 
 namespace MyApp.API.Services
 {
-    public class CategoryService(AppDbContext context, IMapper mapper) : ICategoryService
+    public class CategoryService(AppDbContext context, IMapper mapper, ILogger<CategoryService> logger) : ICategoryService
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
+        private readonly ILogger<CategoryService> _logger = logger;
 
         public async Task<IEnumerable<CategoryDto>> GetAllAsync()
         {
@@ -38,6 +39,8 @@ namespace MyApp.API.Services
             var categoryToAdd = _mapper.Map<Category>(dto);
             _context.Categories.Add(categoryToAdd);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Category added with id = {id}.", categoryToAdd.Id);
             return _mapper.Map<CategoryDto>(categoryToAdd);
         }
 
@@ -47,6 +50,8 @@ namespace MyApp.API.Services
                 ?? throw new NotFoundException("Category does not exist.");
             _mapper.Map(dto, categoryToUpdate);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Category updated with id = {id}.", categoryToUpdate.Id);
             return _mapper.Map<CategoryDto>(categoryToUpdate);
         }
 
@@ -58,6 +63,8 @@ namespace MyApp.API.Services
                 throw new ConflictException("Cannot delete a Category with existing products.");
             _context.Categories.Remove(categoryToDelete);
             await _context.SaveChangesAsync();
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.LogInformation("Category deleted with id = {id}.", categoryToDelete.Id);
 
         }
     }

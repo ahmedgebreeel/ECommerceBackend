@@ -10,7 +10,7 @@ namespace MyApp.API.Middleware
         private readonly ILogger<GlobalExceptionHandler> _logger = logger;
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            _logger.LogError(exception, "An unhandled exception occurred");
+            _logger.LogError(exception.Message, "An unhandled exception occurred");
 
             var response = httpContext.Response;
             response.ContentType = "application/json";
