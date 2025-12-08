@@ -10,11 +10,18 @@ namespace MyApp.API.Controllers
     {
         private readonly IAuthService _authService = authService;
 
-        [HttpPost]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            await _authService.Register(dto);
-            return Ok();
+            var userCreated = await _authService.RegisterAsync(dto);
+            return Ok(userCreated);
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            var isLogged = await _authService.LoginAsync(dto);
+            return Ok(isLogged);
         }
     }
 }

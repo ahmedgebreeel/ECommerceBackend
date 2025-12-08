@@ -4,6 +4,7 @@ namespace MyApp.API.Interfaces
 {
     public interface IAuthService
     {
-        Task<bool> Register(RegisterDto dto);
+        Task<UserDto> RegisterAsync(RegisterDto dto);
+        Task<bool> LoginAsync(LoginDto dto);
     }
 }

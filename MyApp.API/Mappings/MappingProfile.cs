@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MyApp.API.DTOs.Auth;
 using MyApp.API.DTOs.Brands;
 using MyApp.API.DTOs.Categories;
 using MyApp.API.DTOs.OrderItems;
@@ -38,6 +39,11 @@ namespace MyApp.API.Mappings
             CreateMap<Order, OrderDto>();
             //OrderItem Mapping
             CreateMap<OrderItem, OrderItemDto>();
+
+            //User Mapping
+            CreateMap<RegisterDto, ApplicationUser>();
+            CreateMap<ApplicationUser, UserDto>();
+
 
         }
     }
