@@ -11,7 +11,7 @@ namespace MyApp.API.Services
     public class TokenService(IConfiguration config) : ITokenService
     {
         private readonly IConfiguration _config = config;
-        public string CreateToken(ApplicationUser user)
+        public string CreateToken(ApplicationUser user, ICollection<string> roles)
         {
             //Retrieve Secretkey from configuration and Check its length
             var tokenKey = _config["Jwt:SecretKey"]
@@ -28,7 +28,12 @@ namespace MyApp.API.Services
                 new(ClaimTypes.NameIdentifier, user.Id),
                 new(ClaimTypes.Email, user.Email!),
                 new(ClaimTypes.Name, user.UserName!)
+
             };
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             //Create Json Web Token
             var tokenDescriptor = new SecurityTokenDescriptor

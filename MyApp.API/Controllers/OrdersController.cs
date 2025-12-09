@@ -30,6 +30,7 @@ namespace MyApp.API.Controllers
         }
 
         [HttpPut("{id:int}/status")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStatus([FromRoute] int id, [FromBody] UpdateOrderStatusDto dto)
         {
             var updatedOrder = await _orders.UpdateStatusAsync(id, dto);
@@ -37,6 +38,7 @@ namespace MyApp.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             await _orders.DeleteAsync(id);

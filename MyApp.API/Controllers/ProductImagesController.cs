@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyApp.API.DTOs.ProductImages;
 using MyApp.API.Interfaces;
 
@@ -15,12 +16,14 @@ namespace MyApp.API.Controllers
             => Ok(await _productImages.GetAllAsync(productId));
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add([FromRoute] int productId, [FromBody] AddProductImageDto dto)
             => CreatedAtAction(nameof(GetAll), new { productId }, await _productImages.AddImageAsync(productId, dto));
 
 
 
         [HttpPut("{imageId:int}/set-main")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SetMainImage([FromRoute] int productId, [FromRoute] int imageId)
         {
             await _productImages.SetMainImageAsync(productId, imageId);
@@ -28,6 +31,7 @@ namespace MyApp.API.Controllers
         }
 
         [HttpDelete("{imageId:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteImage([FromRoute] int productId, [FromRoute] int imageId)
         {
             await _productImages.DeleteImageAsync(productId, imageId);

@@ -24,6 +24,7 @@ namespace MyApp.API.Services
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new BadRequestException($"Could not register the user ,Errors : {errors}");
             }
+            await _userManager.AddToRoleAsync(userToCreate, "Customer");
 
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("User created with id = {id}.", userToCreate.Id);
@@ -52,7 +53,8 @@ namespace MyApp.API.Services
             if (!isValidPassword)
                 throw new UnauthorizedException("Invalid password.");
 
-            var token = _tokenService.CreateToken(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _tokenService.CreateToken(user, roles);
 
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("User {Identifier} logged in.", dto.Email ?? dto.UserName);

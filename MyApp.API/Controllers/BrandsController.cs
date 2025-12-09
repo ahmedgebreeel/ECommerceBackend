@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyApp.API.DTOs.Brands;
 using MyApp.API.Interfaces;
 
@@ -19,6 +20,7 @@ namespace MyApp.API.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateBrandDto dto)
         {
             var createdBrand = await _brands.CreateAsync(dto);
@@ -26,6 +28,7 @@ namespace MyApp.API.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateBrandDto dto)
         {
             var updatedBrand = await _brands.UpdateAsync(id, dto);
@@ -33,6 +36,7 @@ namespace MyApp.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             await _brands.DeleteAsync(id);

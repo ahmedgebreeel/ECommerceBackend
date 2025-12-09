@@ -35,10 +35,19 @@ namespace MyApp.API.Services
 
         public async Task<IEnumerable<OrderDto>> GetAllAsync()
         {
+            var user = _httpContext?.HttpContext?.User;
             var currentUserId = GetCurrentUserId();
-            var orders = await _context.Orders
-                .AsNoTracking()
-                .Where(o => o.UserId == currentUserId)
+
+            var isAdmin = user?.IsInRole("Admin") ?? false;
+
+            var query = _context.Orders.AsNoTracking();
+
+            if (!isAdmin)
+            {
+                query = query.Where(o => o.UserId == currentUserId);
+            }
+
+            var orders = await query
                 .ProjectTo<OrderDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
             return orders;
@@ -46,10 +55,14 @@ namespace MyApp.API.Services
 
         public async Task<OrderDto> GetByIdAsync(int id)
         {
+            var user = _httpContext?.HttpContext?.User;
             var currentUserId = GetCurrentUserId();
+
+            var isAdmin = user?.IsInRole("Admin") ?? false;
+
             var order = await _context.Orders
                 .AsNoTracking()
-                .Where(o => o.UserId == currentUserId && o.Id == id)
+                .Where(o => (isAdmin || o.UserId == currentUserId) && o.Id == id)
                 .ProjectTo<OrderDto>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync()
                 ?? throw new NotFoundException("Order does not exist.");
@@ -99,7 +112,15 @@ namespace MyApp.API.Services
 
             // EF will generate OrderId and apply it to children automatically
             _context.Orders.Add(orderToCreate);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new ConflictException("The product price or stock changed while you were ordering. Please try again.");
+            }
+
 
 
             if (_logger.IsEnabled(LogLevel.Information))

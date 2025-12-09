@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyApp.API.DTOs.Products;
 using MyApp.API.Interfaces;
 
@@ -17,6 +18,7 @@ namespace MyApp.API.Controllers
         public async Task<IActionResult> GetById([FromRoute] int id) => Ok(await _products.GetByIdAsync(id));
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
         {
             var createdProduct = await _products.CreateAsync(dto);
@@ -24,6 +26,7 @@ namespace MyApp.API.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProductDto dto)
         {
             var updatedProduct = await _products.UpdateAsync(id, dto);
@@ -31,6 +34,7 @@ namespace MyApp.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             await _products.DeleteAsync(id);
