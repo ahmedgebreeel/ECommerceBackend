@@ -9,6 +9,7 @@ using MyApp.API.Mappings;
 using MyApp.API.Middleware;
 using MyApp.API.Services;
 using Serilog;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -77,6 +78,49 @@ namespace MyApp.API
                             ValidIssuer = builder.Configuration["Jwt:Issuer"],
                             ValidAudience = builder.Configuration["Jwt:Audience"],
                             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
+                        };
+
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context =>
+                            {
+                                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+                                if (context.Exception is SecurityTokenExpiredException)
+                                {
+                                    logger.LogWarning("Token expired for user.");
+                                }
+                                else if (context.Exception is SecurityTokenInvalidSignatureException)
+                                {
+                                    logger.LogError(context.Exception, "Invalid Token Signature detected!");
+                                }
+                                else
+                                {
+                                    logger.LogError(context.Exception, "Authentication failed.");
+                                }
+
+                                return Task.CompletedTask;
+                            },
+
+                            OnChallenge = async context =>
+                            {
+                                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+
+                                logger.LogWarning("401 Unauthorized triggered. Error: {Error}, Description: {Desc}",
+                                    context.Error,
+                                    context.ErrorDescription ?? "Token missing or invalid");
+                                context.HandleResponse();
+                                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                                context.Response.ContentType = "application/json";
+                                var errorResponse = new MyApp.API.DTOs.Errors.ApiErrorResponseDto
+                                {
+                                    StatusCode = 401,
+                                    Message = "You are not authorized.",
+                                    Detail = context.ErrorDescription ?? "Token is missing, invalid, or expired.",
+                                    TimeStamp = DateTime.UtcNow
+                                };
+                                await context.Response.WriteAsJsonAsync(errorResponse);
+                            }
                         };
                     });
 
