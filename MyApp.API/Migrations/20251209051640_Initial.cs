@@ -289,15 +289,6 @@ namespace MyApp.API.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[,]
-                {
-                    { "user-1", 0, "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", "john@example.com", true, false, null, "JOHN@EXAMPLE.COM", "JOHN.DOE", "AQAAAAIAAYagAAAAEAHYqA2M9Lpug7ekcTtmsyQ3gRxk85klM6FPzjn4HM3bGvtXdo+Pvpl5UYob6vZ/0Q==", null, false, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", false, "john.doe" },
-                    { "user-2", 0, "dddddddd-dddd-dddd-dddd-dddddddddddd", "mady@example.com", true, false, null, "MADY@EXAMPLE.COM", "MADY", "AQAAAAIAAYagAAAAEMHNC5SaiQqJIjZWkV6tC1H92C9/RCeeCYFSaRlUQK94mjhRsaz4+rQIe3POH7FmTA==", null, false, "cccccccc-cccc-cccc-cccc-cccccccccccc", false, "mady" }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Brands",
                 columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
@@ -325,9 +316,9 @@ namespace MyApp.API.Migrations
                 columns: new[] { "Id", "Created", "Status", "TotalAmount", "UserId" },
                 values: new object[,]
                 {
-                    { 3, new DateTime(2024, 12, 3, 18, 45, 0, 0, DateTimeKind.Unspecified), "Delivered", 129.99m, null },
-                    { 1, new DateTime(2024, 12, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), "Pending", 999.99m, "user-1" },
-                    { 2, new DateTime(2024, 12, 2, 14, 30, 0, 0, DateTimeKind.Unspecified), "Processing", 349.99m, "user-2" }
+                    { 1, new DateTime(2024, 12, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), "Pending", 999.99m, null },
+                    { 2, new DateTime(2024, 12, 2, 14, 30, 0, 0, DateTimeKind.Unspecified), "Processing", 349.99m, null },
+                    { 3, new DateTime(2024, 12, 3, 18, 45, 0, 0, DateTimeKind.Unspecified), "Delivered", 129.99m, null }
                 });
 
             migrationBuilder.InsertData(

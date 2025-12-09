@@ -19,7 +19,6 @@ namespace MyApp.API.Data.Config
                 .HasFilter("[IsMain] = 1");
 
             builder.HasData(
-                // Product 1
                 new ProductImage
                 {
                     Id = 1,
@@ -34,8 +33,6 @@ namespace MyApp.API.Data.Config
                     ImageUrl = "https://picsum.photos/seed/iphone14-2/200",
                     IsMain = false
                 },
-
-                // Product 2
                 new ProductImage
                 {
                     Id = 3,
@@ -50,8 +47,6 @@ namespace MyApp.API.Data.Config
                     ImageUrl = "https://picsum.photos/seed/galaxys23-2/200",
                     IsMain = false
                 },
-
-                // Product 3
                 new ProductImage
                 {
                     Id = 5,
@@ -66,8 +61,6 @@ namespace MyApp.API.Data.Config
                     ImageUrl = "https://picsum.photos/seed/sonyxm5-2/200",
                     IsMain = false
                 },
-
-                // Product 4
                 new ProductImage
                 {
                     Id = 7,
@@ -82,8 +75,6 @@ namespace MyApp.API.Data.Config
                     ImageUrl = "https://picsum.photos/seed/nikeairmax-2/200",
                     IsMain = false
                 },
-
-                // Product 5
                 new ProductImage
                 {
                     Id = 9,

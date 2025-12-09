@@ -218,40 +218,6 @@ namespace MyApp.API.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "user-1",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-                            Email = "john@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "JOHN@EXAMPLE.COM",
-                            NormalizedUserName = "JOHN.DOE",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAHYqA2M9Lpug7ekcTtmsyQ3gRxk85klM6FPzjn4HM3bGvtXdo+Pvpl5UYob6vZ/0Q==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                            TwoFactorEnabled = false,
-                            UserName = "john.doe"
-                        },
-                        new
-                        {
-                            Id = "user-2",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "dddddddd-dddd-dddd-dddd-dddddddddddd",
-                            Email = "mady@example.com",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "MADY@EXAMPLE.COM",
-                            NormalizedUserName = "MADY",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMHNC5SaiQqJIjZWkV6tC1H92C9/RCeeCYFSaRlUQK94mjhRsaz4+rQIe3POH7FmTA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "cccccccc-cccc-cccc-cccc-cccccccccccc",
-                            TwoFactorEnabled = false,
-                            UserName = "mady"
-                        });
                 });
 
             modelBuilder.Entity("MyApp.API.Entities.Brand", b =>
@@ -388,16 +354,14 @@ namespace MyApp.API.Migrations
                             Id = 1,
                             Created = new DateTime(2024, 12, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = "Pending",
-                            TotalAmount = 999.99m,
-                            UserId = "user-1"
+                            TotalAmount = 999.99m
                         },
                         new
                         {
                             Id = 2,
                             Created = new DateTime(2024, 12, 2, 14, 30, 0, 0, DateTimeKind.Unspecified),
                             Status = "Processing",
-                            TotalAmount = 349.99m,
-                            UserId = "user-2"
+                            TotalAmount = 349.99m
                         },
                         new
                         {

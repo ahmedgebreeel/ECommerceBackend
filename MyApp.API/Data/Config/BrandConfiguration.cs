@@ -25,7 +25,7 @@ namespace MyApp.API.Data.Config
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            //Seed Data (migration-based)
+            //Seed Data
             builder.HasData(
                 new Brand
                 {

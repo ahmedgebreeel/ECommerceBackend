@@ -35,7 +35,6 @@ namespace MyApp.API.Data.Config
                 .HasForeignKey(oi => oi.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // 🔥 Seed Products
             builder.HasData(
                 new Product
                 {

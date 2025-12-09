@@ -129,7 +129,10 @@ namespace MyApp.API
                     cfg.AddProfile<MappingProfile>()
                 );
 
-                //7.Register Services in IOC Container
+                //7.Register HttpContextAccessor to access User Claims in Services
+                builder.Services.AddHttpContextAccessor();
+
+                //8.Register Services in IOC Container
                 builder.Services.AddScoped<IBrandService, BrandService>();
                 builder.Services.AddScoped<ICategoryService, CategoryService>();
                 builder.Services.AddScoped<IProductService, ProductService>();
@@ -138,7 +141,7 @@ namespace MyApp.API
                 builder.Services.AddScoped<IAuthService, AuthService>();
                 builder.Services.AddScoped<ITokenService, TokenService>();
 
-                //8. AddControllers
+                //9. AddControllers
                 builder.Services.AddControllers()
                     .AddJsonOptions(options =>
                     {
@@ -148,7 +151,7 @@ namespace MyApp.API
                         );
                     });
 
-                //9.Add OpenApi
+                //10.Add OpenApi
                 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
                 builder.Services.AddOpenApi();
 
