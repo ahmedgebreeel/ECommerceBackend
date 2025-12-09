@@ -22,6 +22,9 @@ namespace MyApp.API.Data.Config
                 .HasColumnType("VARCHAR")
                 .HasMaxLength(500);
 
+            builder.Property(p => p.Version)
+                .IsRowVersion();
+
 
             //one to many Relationship with ProductImage
             builder.HasMany(p => p.Images)
