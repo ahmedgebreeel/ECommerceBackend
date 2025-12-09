@@ -32,36 +32,24 @@ namespace MyApp.API
 
                 // Add services to the container.
 
-                //Jwt Authentication Configuration
-                builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                    .AddJwtBearer(options =>
-                    {
-                        options.TokenValidationParameters = new()
-                        {
-                            ValidateIssuer = true,
-                            ValidateLifetime = true,
-                            ValidateIssuerSigningKey = true,
-                            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
-                        };
-                    });
 
-                //Register SeriLog
+                //1.Register SeriLog
                 builder.Host.UseSerilog((context, loggerConfiguration) =>
                 {
                     loggerConfiguration.WriteTo.Console();
                     loggerConfiguration.ReadFrom.Configuration(context.Configuration);
                 });
 
-                //Add GlobalExceptionHandler
+                //2.Add GlobalExceptionHandler
                 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
                 builder.Services.AddProblemDetails();
 
-                //Add Identity
+                //3.Register DbConext
+                builder.Services.AddDbContext<AppDbContext>(options =>
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("constr"))
+                );
+
+                //4.Add Identity
                 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
                     options.Password.RequireDigit = true;
@@ -72,17 +60,32 @@ namespace MyApp.API
                     .AddEntityFrameworkStores<AppDbContext>()
                     .AddDefaultTokenProviders();
 
-                //Register DbConext
-                builder.Services.AddDbContext<AppDbContext>(options =>
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("constr"))
-                );
+                //5.Jwt Authentication Configuration
+                builder.Services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new()
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                            ValidAudience = builder.Configuration["Jwt:Audience"],
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!))
+                        };
+                    });
 
-                //Register Automapper
+                //6.Register Automapper
                 builder.Services.AddAutoMapper(cfg =>
                     cfg.AddProfile<MappingProfile>()
                 );
 
-                //Register Services in IOC Container
+                //7.Register Services in IOC Container
                 builder.Services.AddScoped<IBrandService, BrandService>();
                 builder.Services.AddScoped<ICategoryService, CategoryService>();
                 builder.Services.AddScoped<IProductService, ProductService>();
@@ -91,6 +94,7 @@ namespace MyApp.API
                 builder.Services.AddScoped<IAuthService, AuthService>();
                 builder.Services.AddScoped<ITokenService, TokenService>();
 
+                //8. AddControllers
                 builder.Services.AddControllers()
                     .AddJsonOptions(options =>
                     {
@@ -100,6 +104,7 @@ namespace MyApp.API
                         );
                     });
 
+                //9.Add OpenApi
                 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
                 builder.Services.AddOpenApi();
 
@@ -107,6 +112,8 @@ namespace MyApp.API
                 var app = builder.Build();
 
                 // Configure the HTTP request pipeline.
+                app.UseExceptionHandler();
+
                 if (app.Environment.IsDevelopment())
                 {
                     app.MapOpenApi();
@@ -119,8 +126,6 @@ namespace MyApp.API
                 app.UseAuthentication();
 
                 app.UseAuthorization();
-
-                app.UseExceptionHandler();
 
                 app.MapControllers();
 

@@ -45,12 +45,12 @@ namespace MyApp.API.Services
             }
 
             if (user is null)
-                throw new BadRequestException("Invalid username/email.");
+                throw new UnauthorizedException("Invalid username/email.");
 
             var isValidPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
 
             if (!isValidPassword)
-                throw new BadRequestException("Invalid password.");
+                throw new UnauthorizedException("Invalid password.");
 
             var token = _tokenService.CreateToken(user);
 

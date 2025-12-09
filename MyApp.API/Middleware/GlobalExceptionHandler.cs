@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
+using MyApp.API.DTOs.Errors;
 using MyApp.API.Exceptions;
 using System.Net;
-using System.Text.Json;
 
 namespace MyApp.API.Middleware
 {
@@ -10,54 +10,56 @@ namespace MyApp.API.Middleware
         private readonly ILogger<GlobalExceptionHandler> _logger = logger;
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            _logger.LogError(exception.Message, "An unhandled exception occurred");
+            if (_logger.IsEnabled(LogLevel.Error))
+                _logger.LogError("Exception Caught: {message}\n{trace}", exception.Message, exception.StackTrace);
 
             var response = httpContext.Response;
             response.ContentType = "application/json";
 
-            var error = new ErrorResponse
-            {
-                Message = exception.Message,
-                Timestamp = DateTime.UtcNow
-            };
+            var statusCode = (int)HttpStatusCode.InternalServerError;
+            var message = "An internal server error occurred.";
+            string? detail = "";
 
             switch (exception)
             {
                 case NotFoundException:
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
-                    error.StatusCode = response.StatusCode;
+                    statusCode = (int)HttpStatusCode.NotFound;
+                    message = exception.Message;
+                    detail = "Resource not found.";
                     break;
 
                 case BadRequestException:
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    error.StatusCode = response.StatusCode;
+                    statusCode = (int)HttpStatusCode.BadRequest;
+                    message = exception.Message;
+                    detail = "Invalid request data.";
                     break;
 
                 case ConflictException:
-                    response.StatusCode = (int)HttpStatusCode.Conflict;
-                    error.StatusCode = response.StatusCode;
+                    statusCode = (int)HttpStatusCode.Conflict;
+                    message = exception.Message;
+                    detail = "Data conflict occurred.";
                     break;
 
-                default:
-                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    error.StatusCode = response.StatusCode;
-                    error.Detail = exception.StackTrace;
+                case UnauthorizedException:
+                    statusCode = (int)HttpStatusCode.Unauthorized;
+                    message = exception.Message;
+                    detail = "You are not authorized to perform this action.";
                     break;
             }
 
-            var json = JsonSerializer.Serialize(error);
 
-            await response.WriteAsync(json, cancellationToken);
+            response.StatusCode = statusCode;
 
-            return true; // Indicates the exception was handled
-        }
 
-        private record ErrorResponse
-        {
-            public string Message { get; set; } = null!;
-            public string? Detail { get; set; }
-            public int StatusCode { get; set; }
-            public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+            var errorResponse = new ApiErrorResponseDto
+            {
+                StatusCode = statusCode,
+                Message = message,
+                Detail = detail
+            };
+
+            await response.WriteAsJsonAsync(errorResponse, cancellationToken);
+            return true;
         }
     }
 }
