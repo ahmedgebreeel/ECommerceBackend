@@ -39,7 +39,7 @@ namespace ECommerce.API
                 }
 
                 app.UseHttpsRedirection();
-                //app.useCors
+                app.UseCors("AngularApp");
                 app.UseRateLimiter();
                 app.UseAuthentication();
                 app.UseAuthorization();

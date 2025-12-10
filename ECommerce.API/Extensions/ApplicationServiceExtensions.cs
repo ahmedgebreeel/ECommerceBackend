@@ -46,6 +46,18 @@ namespace ECommerce.API.Extensions
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<ICartService, CartService>();
 
+            // Add CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AngularApp", policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200") // Angular Port
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials(); // Required for HttpOnly Cookies
+                });
+            });
+
             //Controllers Configuration
             services.AddControllers()
                 .AddJsonOptions(options =>
