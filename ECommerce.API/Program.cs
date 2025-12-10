@@ -43,8 +43,10 @@ namespace ECommerce.API
                 app.UseAuthentication();
 
                 app.UseAuthorization();
-
-                app.MapControllers();
+                //app.useCors
+                app.UseRateLimiter();
+                app.MapControllers()
+                    .RequireRateLimiting("standard");
 
                 using (var scope = app.Services.CreateScope())
                 {

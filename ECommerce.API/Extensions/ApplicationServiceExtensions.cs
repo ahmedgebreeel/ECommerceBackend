@@ -5,10 +5,12 @@ using ECommerce.Business.Mappings;
 using ECommerce.Business.Services;
 using ECommerce.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 namespace ECommerce.API.Extensions
 {
@@ -76,12 +78,24 @@ namespace ECommerce.API.Extensions
                         return new BadRequestObjectResult(errorResponse);
                     };
                 });
+            //RateLimiter
+            services.AddRateLimiter(options =>
+            {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
+                options.AddSlidingWindowLimiter("standard", options =>
+                {
+                    options.PermitLimit = 60;
+                    options.Window = TimeSpan.FromMinutes(1);
+                    options.SegmentsPerWindow = 3; // Splits minute into 20s segments for smoothing
+                    options.QueueLimit = 5;
+                    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                });
+            });
 
             //OpenApi
             services.AddOpenApi(options =>
             {
-                // 1. Define the Bearer Scheme globally (The "Definition")
                 options.AddDocumentTransformer((document, context, cancellationToken) =>
                 {
                     document.Info = new OpenApiInfo
@@ -104,17 +118,13 @@ namespace ECommerce.API.Extensions
                     return Task.CompletedTask;
                 });
 
-                // 2. Apply the Scheme ONLY to protected endpoints (The "Logic")
                 options.AddOperationTransformer((operation, context, cancellationToken) =>
                 {
                     var metadata = context.Description.ActionDescriptor.EndpointMetadata;
 
-                    // Check if endpoint has [Authorize] attribute
                     bool hasAuthorize = metadata.Any(m => m is Microsoft.AspNetCore.Authorization.AuthorizeAttribute);
-                    // Check if endpoint has [AllowAnonymous] attribute (overrides Authorize)
                     bool hasAnonymous = metadata.Any(m => m is Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute);
 
-                    // Only add the lock if Authorized AND NOT Anonymous
                     if (hasAuthorize && !hasAnonymous)
                     {
                         operation.Security = new List<OpenApiSecurityRequirement>
