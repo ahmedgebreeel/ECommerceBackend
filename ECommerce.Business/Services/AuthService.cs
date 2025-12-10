@@ -49,10 +49,21 @@ namespace ECommerce.Business.Services
             if (user is null)
                 throw new UnauthorizedException("Invalid username/email.");
 
+            if (await _userManager.IsLockedOutAsync(user))
+                throw new UnauthorizedException("Account is locked. Try again in 15 minutes.");
+
+
             var isValidPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
 
             if (!isValidPassword)
+            {
+                await _userManager.AccessFailedAsync(user);
+                if (await _userManager.IsLockedOutAsync(user))
+                    throw new UnauthorizedException("Account locked due to too many failed attempts.");
                 throw new UnauthorizedException("Invalid password.");
+            }
+
+            await _userManager.ResetAccessFailedCountAsync(user);
 
             var roles = await _userManager.GetRolesAsync(user);
             var token = _tokenService.CreateToken(user, roles);

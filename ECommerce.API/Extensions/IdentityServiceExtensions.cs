@@ -17,10 +17,16 @@ namespace ECommerce.API.Extensions
             //Add Identity
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
+                //Password settings
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
                 options.Password.RequireNonAlphanumeric = false;
                 options.User.RequireUniqueEmail = true;
+
+                //lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15); // Lock for 15 min
+                options.Lockout.MaxFailedAccessAttempts = 5; // After 5 wrong tries
+                options.Lockout.AllowedForNewUsers = true;
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
