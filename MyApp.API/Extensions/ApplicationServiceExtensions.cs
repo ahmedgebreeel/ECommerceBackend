@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ECommerce.API.Middleware;
+using ECommerce.Business.DTOs.Errors;
+using ECommerce.Business.Interfaces;
+using ECommerce.Business.Mappings;
+using ECommerce.Business.Services;
+using ECommerce.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MyApp.API.Data;
-using MyApp.API.Interfaces;
-using MyApp.API.Mappings;
-using MyApp.API.Middleware;
-using MyApp.API.Services;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace MyApp.API.Extensions
+namespace ECommerce.API.Extensions
 {
     public static class ApplicationServiceExtensions
     {
@@ -61,7 +62,7 @@ namespace MyApp.API.Extensions
                         var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                         logger.LogWarning("400 Validation Error: {Error}", errors);
 
-                        var errorResponse = new MyApp.API.DTOs.Errors.ApiErrorResponseDto
+                        var errorResponse = new ApiErrorResponseDto
                         {
                             StatusCode = 400,
                             Message = "Validation failed",

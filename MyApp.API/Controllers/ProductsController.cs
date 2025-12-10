@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ECommerce.Business.DTOs.Errors;
+using ECommerce.Business.DTOs.Products;
+using ECommerce.Business.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyApp.API.DTOs.Errors;
-using MyApp.API.DTOs.Products;
-using MyApp.API.Interfaces;
 
-namespace MyApp.API.Controllers
+namespace ECommerce.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

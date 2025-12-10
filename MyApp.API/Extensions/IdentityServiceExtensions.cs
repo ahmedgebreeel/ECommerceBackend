@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using ECommerce.Business.DTOs.Errors;
+using ECommerce.Core.Entities;
+using ECommerce.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using MyApp.API.Data;
-using MyApp.API.Entities;
 using System.Net;
 using System.Text;
 
-namespace MyApp.API.Extensions
+namespace ECommerce.API.Extensions
 {
     public static class IdentityServiceExtensions
     {
@@ -74,7 +75,7 @@ namespace MyApp.API.Extensions
                         context.HandleResponse();
                         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                         context.Response.ContentType = "application/json";
-                        var errorResponse = new MyApp.API.DTOs.Errors.ApiErrorResponseDto
+                        var errorResponse = new ApiErrorResponseDto
                         {
                             StatusCode = 401,
                             Message = "You are not authorized.",
@@ -91,7 +92,7 @@ namespace MyApp.API.Extensions
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
                         context.Response.ContentType = "application/json";
 
-                        var errorResponse = new MyApp.API.DTOs.Errors.ApiErrorResponseDto
+                        var errorResponse = new ApiErrorResponseDto
                         {
                             StatusCode = 403,
                             Message = "You are not authorized to access this resource.",

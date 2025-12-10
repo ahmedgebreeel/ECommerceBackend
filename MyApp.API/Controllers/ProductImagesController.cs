@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ECommerce.Business.DTOs.Errors;
+using ECommerce.Business.DTOs.ProductImages;
+using ECommerce.Business.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyApp.API.DTOs.Errors;
-using MyApp.API.DTOs.ProductImages;
-using MyApp.API.Interfaces;
 
-namespace MyApp.API.Controllers
+namespace ECommerce.API.Controllers
 {
     [Route("api/products/{productId:int}/images")]
     [ApiController]

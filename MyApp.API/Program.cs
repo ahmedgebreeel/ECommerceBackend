@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using MyApp.API.Data;
-using MyApp.API.Extensions;
+using ECommerce.API.Extensions;
+using ECommerce.Data;
 using Serilog;
 
-namespace MyApp.API
+namespace ECommerce.API
 {
     public class Program
     {
@@ -23,8 +21,11 @@ namespace MyApp.API
 
                 // Add services to the container.
                 builder.Host.ConfigureSerilog();
+
                 builder.Services.AddApplicationServices(builder.Configuration);
+
                 builder.Services.AddIdentityServices(builder.Configuration);
+
                 var app = builder.Build();
 
                 // Configure the HTTP request pipeline.
@@ -45,7 +46,20 @@ namespace MyApp.API
 
                 app.MapControllers();
 
-                await DbInitializer.SeedRolesAndAdminAsync(app);
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+
+                    try
+                    {
+                        await DbInitializer.SeedRolesAndAdminAsync(services);
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = services.GetRequiredService<ILogger<Program>>();
+                        logger.LogError(ex, "An error occurred during database migration/seeding.");
+                    }
+                }
 
                 app.Run();
             }

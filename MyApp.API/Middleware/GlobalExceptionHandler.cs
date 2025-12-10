@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using MyApp.API.DTOs.Errors;
-using MyApp.API.Exceptions;
+﻿using ECommerce.Business.DTOs.Errors;
+using ECommerce.Core.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
 
-namespace MyApp.API.Middleware
+namespace ECommerce.API.Middleware
 {
     public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
     {
