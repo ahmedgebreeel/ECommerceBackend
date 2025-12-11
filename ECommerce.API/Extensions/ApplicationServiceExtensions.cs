@@ -90,6 +90,7 @@ namespace ECommerce.API.Extensions
                         return new BadRequestObjectResult(errorResponse);
                     };
                 });
+
             //RateLimiter
             services.AddRateLimiter(options =>
             {

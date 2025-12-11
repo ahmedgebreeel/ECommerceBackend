@@ -122,10 +122,20 @@ namespace ECommerce.Business.Services
             var orderToUpdate = await _context.Orders
                 .Where(o => o.Id == id && (IsAdmin() || o.UserId == currentUserId))
                 .Include(o => o.Items)
+                .ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(o => o.Id == id)
                 ?? throw new NotFoundException("Order does not exist.");
 
+            if (dto.Status == OrderStatus.Canceled && orderToUpdate.Status != OrderStatus.Canceled)
+            {
+                foreach (var item in orderToUpdate.Items)
+                {
+                    item.Product.StockQuantity += item.Quantity;
+                }
+            }
+
             orderToUpdate.Status = dto.Status;
+
             await _context.SaveChangesAsync();
 
             if (_logger.IsEnabled(LogLevel.Information))
