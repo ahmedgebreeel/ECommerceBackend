@@ -51,7 +51,7 @@ namespace ECommerce.Business.Services
             }
 
             if (user is null)
-                throw new UnauthorizedException("Invalid username/email.");
+                throw new BadRequestException("Invalid email or password.");
 
             if (await _userManager.IsLockedOutAsync(user))
                 throw new UnauthorizedException("Account is locked. Try again in 15 minutes.");
@@ -67,7 +67,7 @@ namespace ECommerce.Business.Services
                 if (await _userManager.IsLockedOutAsync(user))
                     throw new UnauthorizedException("Account locked due to too many failed attempts.");
 
-                throw new UnauthorizedException("Invalid password.");
+                throw new BadRequestException("Invalid email or password.");
             }
 
             //Reset Failed Access Counter on Successful login.
@@ -97,7 +97,9 @@ namespace ECommerce.Business.Services
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken.Token,
-                RefreshTokenExpiration = refreshToken.ExpiresOn
+                RefreshTokenExpiration = refreshToken.ExpiresOn,
+                user = _mapper.Map<UserDto>(user),
+                roles = roles
             };
         }
 

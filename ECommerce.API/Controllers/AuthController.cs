@@ -37,7 +37,7 @@ namespace ECommerce.API.Controllers
         {
             var authResponse = await _authService.LoginAsync(dto);
             SetRefreshTokenCookie(authResponse.RefreshToken, authResponse.RefreshTokenExpiration);
-            return Ok(new { authResponse.AccessToken });
+            return Ok(new { authResponse.AccessToken, authResponse.user, authResponse.roles });
         }
 
         [HttpPost("refresh-token")]
