@@ -58,6 +58,7 @@ namespace ECommerce.Business.Mappings
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email));
             CreateMap<CreateAddressDto, Address>();
             CreateMap<UpdateAddressDto, Address>();
+            CreateMap<Address, OrderAddress>();
 
             //ShoppingCart Mapping
             CreateMap<ShoppingCart, ShoppingCartDto>();
@@ -75,7 +76,10 @@ namespace ECommerce.Business.Mappings
                     => opt.MapFrom(src
                         => src.Product.Price));
 
-
+            //Checkout Mapping
+            CreateMap<CartItem, OrderItem>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Product.Price));
         }
     }
 }

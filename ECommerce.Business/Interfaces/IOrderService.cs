@@ -8,6 +8,7 @@ namespace ECommerce.Business.Interfaces
         Task<OrderDto> GetByIdAsync(int id);
         Task<OrderDto> CreateAsync(CreateOrderDto dto);
         Task<OrderDto> UpdateStatusAsync(int id, UpdateOrderStatusDto dto);
-        Task DeleteAsync(int id); // Admin
+        Task DeleteAsync(int id);
+        Task<OrderDto> CheckoutAsync(CheckoutDto dto);
     }
 }

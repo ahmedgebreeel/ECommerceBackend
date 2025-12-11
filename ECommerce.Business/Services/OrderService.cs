@@ -71,7 +71,10 @@ namespace ECommerce.Business.Services
                 .FirstOrDefaultAsync()
                 ?? throw new NotFoundException("Shipping Address not found.");
 
-            var productIds = dto.Items.Select(i => i.ProductId).Distinct().ToList();
+            var productIds = dto.Items
+                .Select(i => i.ProductId)
+                .Distinct()
+                .ToList();
 
             var products = await _context.Products
                 .Where(p => productIds.Contains(p.Id))
@@ -168,6 +171,64 @@ namespace ECommerce.Business.Services
 
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Order deleted with id = {orderId}.", orderToDelete.Id);
+        }
+
+        public async Task<OrderDto> CheckoutAsync(CheckoutDto dto)
+        {
+            //get current user
+            var currentUserId = GetCurrentUserId();
+
+            // get User's Cart (Include Product info for Price/Stock validation)
+            var cart = await _context.ShoppingCarts
+                .Include(c => c.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(sc => sc.UserId == currentUserId);
+
+            if (cart == null || cart.Items.Count == 0)
+                throw new BadRequestException("Cannot checkout. Your cart is empty.");
+
+            //get shipping address of user
+            var shippingAddress = await _context.Addresses
+                .AsNoTracking()
+                .Where(a => a.Id == dto.ShippingAddressId && a.UserId == currentUserId)
+                .ProjectTo<OrderAddress>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync()
+                ?? throw new NotFoundException("Shipping Address not found.");
+            //create order
+            var orderToCreate = new Order
+            {
+                UserId = currentUserId,
+                Created = DateTime.UtcNow,
+                Status = OrderStatus.Pending,
+                ShippingAddress = shippingAddress,
+                Items = []
+            };
+            //Loop over the cart items => validate stock => add them to order
+            foreach (var cartItem in cart.Items)
+            {
+                //product stock check
+                if (cartItem.Quantity > cartItem.Product.StockQuantity)
+                    throw new BadRequestException($"Not enough stock for {cartItem.Product.Name}. Available: {cartItem.Product.StockQuantity}");
+                cartItem.Product.StockQuantity -= cartItem.Quantity;
+                orderToCreate.Items.Add(_mapper.Map<OrderItem>(cartItem));
+            }
+
+            orderToCreate.TotalAmount = orderToCreate.Items.Sum(i => i.TotalPrice);
+            _context.Orders.Add(orderToCreate);
+            _context.CartItems.RemoveRange(cart.Items);
+            cart.LastUpdated = DateTime.UtcNow;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new ConflictException("Stock changed during checkout. Please try again.");
+            }
+
+            return _mapper.Map<OrderDto>(orderToCreate);
+
         }
 
         private string GetCurrentUserId()

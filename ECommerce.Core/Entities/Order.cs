@@ -14,7 +14,7 @@ namespace ECommerce.Core.Entities
         public virtual ICollection<OrderItem> Items { get; set; } = null!;
 
         //many to one relation with User
-        public string? UserId { get; set; }
-        public virtual ApplicationUser? User { get; set; }
+        public string UserId { get; set; } = null!;
+        public virtual ApplicationUser User { get; set; } = null!;
     }
 }

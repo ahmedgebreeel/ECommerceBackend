@@ -75,5 +75,16 @@ namespace ECommerce.API.Controllers
             return NoContent();
         }
 
+        [HttpPost("checkout")]
+        [EndpointSummary("Checkout Cart")]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Checkout([FromBody] CheckoutDto dto)
+        {
+            var createdOrder = await _orders.CheckoutAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = createdOrder.Id }, createdOrder);
+        }
+
     }
 }

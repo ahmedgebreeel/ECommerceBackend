@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251210203243_Initial")]
+    [Migration("20251211071745_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -279,6 +279,7 @@ namespace ECommerce.Data.Migrations
                         .HasColumnType("DECIMAL(18,2)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -735,7 +736,8 @@ namespace ECommerce.Data.Migrations
                     b.HasOne("ECommerce.Core.Entities.ApplicationUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.OwnsOne("ECommerce.Core.Entities.OrderAddress", "ShippingAddress", b1 =>
                         {

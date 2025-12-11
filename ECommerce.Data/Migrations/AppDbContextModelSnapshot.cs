@@ -276,6 +276,7 @@ namespace ECommerce.Data.Migrations
                         .HasColumnType("DECIMAL(18,2)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -732,7 +733,8 @@ namespace ECommerce.Data.Migrations
                     b.HasOne("ECommerce.Core.Entities.ApplicationUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.OwnsOne("ECommerce.Core.Entities.OrderAddress", "ShippingAddress", b1 =>
                         {

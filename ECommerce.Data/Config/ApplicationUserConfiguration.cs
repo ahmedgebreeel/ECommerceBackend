@@ -12,7 +12,7 @@ namespace ECommerce.Data.Config
             builder.HasMany(u => u.Orders)
                 .WithOne(o => o.User)
                 .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Restrict);
 
             //one to many relation with addresses
             builder.HasMany(u => u.Addresses)
