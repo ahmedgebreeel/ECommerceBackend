@@ -20,6 +20,7 @@ namespace ECommerce.Business.Services
                 ?? throw new NotFoundException("Cannot access Jwt:SecretKey");
             if (tokenKey.Length < 32)
                 throw new BadRequestException("Jwt:Key must be at least 32 characters");
+
             //Create Credentials
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -89,8 +89,8 @@ namespace ECommerce.API.Controllers
         {
             var cookieOptions = new CookieOptions
             {
-                HttpOnly = true, // JS cannot read this
-                Secure = true,   // HTTPS only
+                HttpOnly = true,
+                Secure = true,
                 Expires = expires,
                 SameSite = SameSiteMode.Strict
             };

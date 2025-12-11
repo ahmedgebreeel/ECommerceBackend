@@ -39,6 +39,7 @@ namespace ECommerce.Business.Services
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
+            //Authenticate User from databse
             ApplicationUser? user;
             if (dto.Identifier.Contains('@'))
             {
@@ -58,14 +59,18 @@ namespace ECommerce.Business.Services
 
             var isValidPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
 
+            // Lockout ( If password entered invalid many time, lock the user out)
             if (!isValidPassword)
             {
                 await _userManager.AccessFailedAsync(user);
+
                 if (await _userManager.IsLockedOutAsync(user))
                     throw new UnauthorizedException("Account locked due to too many failed attempts.");
+
                 throw new UnauthorizedException("Invalid password.");
             }
 
+            //Reset Failed Access Counter on Successful login.
             await _userManager.ResetAccessFailedCountAsync(user);
 
             //1.Generate JWT Token (Access Token)
@@ -73,7 +78,7 @@ namespace ECommerce.Business.Services
             var accessToken = _tokenService.CreateAccessToken(user, roles);
             // 2. Generate Refresh Token (Based on RememberMe)
             var refreshToken = _tokenService.GenerateRefreshToken(user.Id, dto.RememberMe);
-
+            //Check if there are old revoked tokens and clean them up
             var junkTokens = await _context.RefreshTokens
                 .Where(t => t.UserId == user.Id && (t.ExpiresOn <= DateTime.UtcNow || t.RevokedOn != null))
                 .ToListAsync();
@@ -108,8 +113,7 @@ namespace ECommerce.Business.Services
 
                 await _context.RefreshTokens
                     .Where(t => t.UserId == existingToken.UserId)
-                    .ExecuteUpdateAsync(u
-                        => u.SetProperty(t => t.RevokedOn, DateTime.UtcNow));
+                    .ExecuteUpdateAsync(u => u.SetProperty(t => t.RevokedOn, DateTime.UtcNow));
 
                 throw new UnauthorizedException("Invalid token.");
             }
