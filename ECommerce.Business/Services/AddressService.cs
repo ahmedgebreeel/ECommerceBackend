@@ -21,26 +21,40 @@ namespace ECommerce.Business.Services
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<BrandService> _logger = logger;
         private readonly IHttpContextAccessor _httpContext = httpContext;
-        public async Task<IEnumerable<AddressDto>> GetAllAsync()
+
+        //Admin
+        //1. userId null => return all saved addresses for all users as IEnumerable<AddressWithUserDto>
+        //2. userId not null => return all saved addresses for user with id = userId as IEnumerable<AddressDto>
+
+        //Not Admin (Customer)
+        // userId null or not => return all saved addresses for current logged in user as IEnumerable<AddressDto>
+
+        public async Task<IEnumerable<AddressDto>> GetAllAsync(string? userId = null)
         {
             var currentUserId = GetCurrentUserId();
 
+            var query = _context.Addresses.AsNoTracking().AsQueryable();
+
             if (!IsAdmin())
             {
-                return await _context.Addresses
-                    .AsNoTracking()
-                    .Where(a => a.UserId == currentUserId)
-                    .ProjectTo<AddressDto>(_mapper.ConfigurationProvider)
-                    .ToListAsync();
+                query = query.Where(a => a.UserId == currentUserId);
             }
             else
             {
-                return await _context.Addresses
-                    .AsNoTracking()
-                    .Include(a => a.User)
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    query = query.Where(a => a.UserId == userId);
+                }
+            }
+
+            if (IsAdmin() && string.IsNullOrEmpty(userId))
+                return await query
                     .ProjectTo<AddressWithUserDto>(_mapper.ConfigurationProvider)
                     .ToListAsync();
-            }
+            else
+                return await query
+                    .ProjectTo<AddressDto>(_mapper.ConfigurationProvider)
+                    .ToListAsync();
 
         }
 
@@ -105,6 +119,7 @@ namespace ECommerce.Business.Services
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("Address deleted with id = {id}", id);
         }
+
 
         private string GetCurrentUserId()
         {

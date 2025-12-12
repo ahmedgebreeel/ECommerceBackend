@@ -15,12 +15,16 @@ namespace ECommerce.API.Controllers
         private readonly IAddressService _addresses = addresses;
 
         [HttpGet]
-        [EndpointSummary("Get all addresses")]
-        [EndpointDescription("Retrieves addresses. Admins see all system addresses (with User info); Customers see only their own saved addresses.")]
+        [EndpointSummary("Get addresses")]
+        [EndpointDescription(
+        "Retrieves a list of addresses. Behavior depends on the user role:\n" +
+        "- **Customers**: Returns only their own saved addresses.\n" +
+        "- **Admins (No Filter)**: Returns ALL system addresses with user details (`AddressWithUserDto`).\n" +
+        "- **Admins (with `userId`)**: Returns addresses for that specific user only.")]
         [ProducesResponseType(typeof(IEnumerable<AddressDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetAll()
-            => Ok(await _addresses.GetAllAsync());
+        public async Task<IActionResult> GetAll([FromQuery] string? userId)
+            => Ok(await _addresses.GetAllAsync(userId));
 
         [HttpGet("{id:int}")]
         [EndpointSummary("Get address details")]
@@ -68,6 +72,5 @@ namespace ECommerce.API.Controllers
             await _addresses.DeleteAsync(id);
             return NoContent();
         }
-
     }
 }

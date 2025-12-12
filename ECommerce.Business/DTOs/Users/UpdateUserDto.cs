@@ -2,7 +2,7 @@
 
 namespace ECommerce.Business.DTOs.Users
 {
-    public class UpdateUserDto
+    public class UpdateUserDto // User Updates his account details
     {
         public string UserName { get; set; } = null!;
 

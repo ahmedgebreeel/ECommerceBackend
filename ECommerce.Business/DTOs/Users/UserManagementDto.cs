@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Business.DTOs.Users
 {
-    public class UserManagementDto
+    public class UserManagementDto // Used In Admin => List Users
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;

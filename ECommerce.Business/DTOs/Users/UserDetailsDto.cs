@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Business.DTOs.Users
 {
-    public class UserDetailsDto
+    public class UserDetailsDto //Used In Admin =>  User Details , Customer => User Account Details
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty; // map
