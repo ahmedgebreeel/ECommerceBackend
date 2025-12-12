@@ -11,7 +11,7 @@ namespace ECommerce.Core.Entities
         public OrderAddress ShippingAddress { get; set; } = null!;
 
         //one to many relation with OrderItems
-        public virtual ICollection<OrderItem> Items { get; set; } = null!;
+        public virtual ICollection<OrderItem> Items { get; set; } = [];
 
         //many to one relation with User
         public string UserId { get; set; } = null!;

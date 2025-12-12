@@ -28,11 +28,10 @@ namespace ECommerce.Business.Mappings
 
             //Product Mapping
             CreateMap<Product, ProductDto>()
-                .ForMember(dest => dest.ImageUrl, opt
-                    => opt.MapFrom(src
-                        => src.Images.Where(i => i.IsMain)
-                        .Select(i => i.ImageUrl)
-                        .FirstOrDefault()));
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(mapExpression: src => src.Category.Name))
+                .ForMember(dest => dest.BrandName, opt => opt.MapFrom(mapExpression: src => src.Brand.Name))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
+                        src.Images.Where(i => i.IsMain).Select(i => i.ImageUrl).FirstOrDefault()));
             CreateMap<CreateProductDto, Product>();
             CreateMap<UpdateProductDto, Product>();
 

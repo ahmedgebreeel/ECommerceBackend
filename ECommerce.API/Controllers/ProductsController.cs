@@ -1,4 +1,5 @@
 ﻿using ECommerce.Business.DTOs.Errors;
+using ECommerce.Business.DTOs.Pagination;
 using ECommerce.Business.DTOs.Products;
 using ECommerce.Business.Interfaces;
 using ECommerce.Core.Specifications;
@@ -17,7 +18,7 @@ namespace ECommerce.API.Controllers
         [HttpGet]
         [EndpointSummary("Get all products")]
         [EndpointDescription("Retrieves a list of all products.")]
-        [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResponseDto<ProductDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] ProductSpecParams specParams) => Ok(await _products.GetAllAsync(specParams));
 
         [HttpGet("{id:int}")]

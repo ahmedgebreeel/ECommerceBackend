@@ -3,10 +3,10 @@
     public class AddressDto
     {
         public int Id { get; set; }
-        public string Street { get; set; } = null!;
-        public string City { get; set; } = null!;
-        public string State { get; set; } = null!;
+        public string Street { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public string State { get; set; } = string.Empty;
         public string? PostalCode { get; set; }
-        public string Country { get; set; } = null!;
+        public string Country { get; set; } = string.Empty;
     }
 }

@@ -8,8 +8,8 @@
         public decimal Price { get; set; }
         public int StockQuantity { get; set; }
         public DateTime Created { get; set; } = DateTime.UtcNow;
-        public bool IsFeatured { get; set; } = false;
-        public byte[] Version { get; set; } = null!;
+        public bool IsFeatured { get; set; }
+        public byte[] Version { get; set; } = [];
 
         //one to many Relationship with ProductImage
         public virtual ICollection<ProductImage> Images { get; set; } = [];

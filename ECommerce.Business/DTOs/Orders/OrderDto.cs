@@ -6,9 +6,9 @@ namespace ECommerce.Business.DTOs.Orders
     {
         public int Id { get; set; }
         public DateTime Created { get; set; }
-        public string Status { get; set; } = null!;
+        public string Status { get; set; } = string.Empty;
         public decimal TotalAmount { get; set; }
-        public ICollection<OrderItemDto> Items { get; set; } = null!;
+        public ICollection<OrderItemDto> Items { get; set; } = [];
 
 
     }

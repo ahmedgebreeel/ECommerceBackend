@@ -7,6 +7,6 @@
         public string? Description { get; set; }
 
         //one to many relation with Product
-        public virtual ICollection<Product> Products { get; set; } = null!;
+        public virtual ICollection<Product> Products { get; set; } = [];
     }
 }
