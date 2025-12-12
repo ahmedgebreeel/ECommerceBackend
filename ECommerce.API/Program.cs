@@ -35,11 +35,7 @@ namespace ECommerce.API
                 {
                     app.MapOpenApi();
                     app.UseSwaggerUI(options =>
-                    {
-                        options.SwaggerEndpoint("/openapi/v1.json", "My Api v1");
-                        options.RoutePrefix = "";
-
-                    });
+                        options.SwaggerEndpoint("/openapi/v1.json", "My Api v1"));
                 }
 
                 app.UseHttpsRedirection();
