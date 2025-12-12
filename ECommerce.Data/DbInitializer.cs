@@ -36,7 +36,7 @@ namespace ECommerce.Data
 
         private static async Task SeedRolesAndAdminAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            string[] roleNames = { "Admin", "Customer" };
+            string[] roleNames = { "Admin", "Customer", "Seller" };
             foreach (var roleName in roleNames)
             {
                 if (!await roleManager.RoleExistsAsync(roleName))
