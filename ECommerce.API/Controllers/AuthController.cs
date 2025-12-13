@@ -93,7 +93,7 @@ namespace ECommerce.API.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict
+                SameSite = SameSiteMode.None
             });
 
             return NoContent();
@@ -106,7 +106,7 @@ namespace ECommerce.API.Controllers
                 HttpOnly = true,
                 Secure = true,
                 Expires = expires,
-                SameSite = SameSiteMode.Strict
+                SameSite = SameSiteMode.None
             };
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
