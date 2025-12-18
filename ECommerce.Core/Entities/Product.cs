@@ -9,6 +9,7 @@
         public int StockQuantity { get; set; }
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public bool IsFeatured { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public byte[] Version { get; set; } = [];
 
         //one to many Relationship with ProductImage

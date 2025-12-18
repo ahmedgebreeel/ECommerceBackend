@@ -272,7 +272,7 @@ namespace ECommerce.Data.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -335,6 +335,9 @@ namespace ECommerce.Data.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("NVARCHAR(MAX)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsFeatured")
                         .HasColumnType("bit");
@@ -680,12 +683,41 @@ namespace ECommerce.Data.Migrations
                     b.HasOne("ECommerce.Core.Entities.Product", "Product")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.OwnsOne("ECommerce.Core.Entities.ProductItemOrdered", "ProductOrdered", b1 =>
+                        {
+                            b1.Property<int>("OrderItemId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("PictureUrl")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("OrderedProductThumbnailUrl");
+
+                            b1.Property<int>("ProductId")
+                                .HasColumnType("int")
+                                .HasColumnName("OrderedProductId");
+
+                            b1.Property<string>("ProductName")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("nvarchar(100)")
+                                .HasColumnName("OrderedProductName");
+
+                            b1.HasKey("OrderItemId");
+
+                            b1.ToTable("OrderItems");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderItemId");
+                        });
 
                     b.Navigation("Order");
 
                     b.Navigation("Product");
+
+                    b.Navigation("ProductOrdered")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ECommerce.Core.Entities.OrderTrackingMilestone", b =>

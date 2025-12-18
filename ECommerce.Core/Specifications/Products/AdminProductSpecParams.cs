@@ -2,9 +2,12 @@
 {
     public class AdminProductSpecParams
     {
+        //Filter
+        public string? Status { get; set; }
 
         //Search Params
         public string? Search { get; set; }
+
         //Pagination Params
         public int PageIndex { get; set; } = 1;
         private int _pageSize = 10;

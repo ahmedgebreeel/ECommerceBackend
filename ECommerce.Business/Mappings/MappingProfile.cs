@@ -76,12 +76,12 @@ namespace ECommerce.Business.Mappings
 
             //OrderItem Mapping
             CreateMap<OrderItem, OrderItemDto>()
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                .ForMember(dest => dest.ProductId,
+                opt => opt.MapFrom(src => src.ProductOrdered.ProductId))
+                .ForMember(dest => dest.ProductName,
+                opt => opt.MapFrom(src => src.ProductOrdered.ProductName))
                 .ForMember(dest => dest.ProductThumbnailUrl, opt
-                => opt.MapFrom(src
-                => src.Product.Images.Where(pi
-                => pi.IsMain).Select(pi
-                => pi.ImageUrl).FirstOrDefault()));
+                => opt.MapFrom(src => src.ProductOrdered.PictureUrl));
 
             //OrderTrackingMilestone Mapping
             CreateMap<OrderTrackingMilestone, OrderTrackingMilestoneDto>();
@@ -131,6 +131,12 @@ namespace ECommerce.Business.Mappings
             //Checkout Mapping
             CreateMap<CartItem, OrderItem>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.ProductOrdered, opt => opt.MapFrom(src => new ProductItemOrdered
+                {
+                    ProductId = src.ProductId,
+                    ProductName = src.Product.Name,
+                    PictureUrl = src.Product.Images.Where(i => i.IsMain).Select(i => i.ImageUrl).FirstOrDefault()
+                }))
                 .ForMember(dest => dest.UnitPrice, opt => opt.MapFrom(src => src.Product.Price));
         }
     }

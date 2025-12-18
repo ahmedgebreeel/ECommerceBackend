@@ -96,7 +96,8 @@ namespace ECommerce.Business.Services
             var orderToUpdate = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.Items)
-                .ThenInclude(i => i.Product)
+                    .ThenInclude(i => i.Product)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(o => o.Id == orderId)
                 ?? throw new NotFoundException("Order does not exist.");
 
@@ -129,7 +130,8 @@ namespace ECommerce.Business.Services
                 {
                     foreach (var item in orderToUpdate.Items)
                     {
-                        item.Product.StockQuantity += item.Quantity;
+                        if (item.Product is not null)
+                            item.Product.StockQuantity += item.Quantity;
                     }
                     changes.Add("Inventory restocked");
                 }
@@ -230,7 +232,9 @@ namespace ECommerce.Business.Services
             // get User's Cart (Include Product info for Price/Stock validation)
             var cart = await _context.ShoppingCarts
                 .Include(c => c.Items)
-                .ThenInclude(i => i.Product)
+                .ThenInclude(ci => ci.Product)
+                    .ThenInclude(p => p.Images)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(sc => sc.UserId == currentUserId);
 
             if (cart == null || cart.Items.Count == 0)
@@ -267,6 +271,7 @@ namespace ECommerce.Business.Services
                 if (cartItem.Quantity > cartItem.Product.StockQuantity)
                     throw new BadRequestException($"Not enough stock for {cartItem.Product.Name}. Available: {cartItem.Product.StockQuantity}");
                 cartItem.Product.StockQuantity -= cartItem.Quantity;
+
                 orderToCreate.Items.Add(_mapper.Map<OrderItem>(cartItem));
             }
             orderToCreate.OrderTrackingMilestones.Add(new OrderTrackingMilestone

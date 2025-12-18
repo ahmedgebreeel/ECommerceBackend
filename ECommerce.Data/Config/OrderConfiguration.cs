@@ -29,14 +29,14 @@ namespace ECommerce.Data.Config
                 .HasMaxLength(50);
 
             //configure owned type (snapshot)
-            builder.OwnsOne(o => o.ShippingAddress, a =>
+            builder.OwnsOne(o => o.ShippingAddress, sa =>
             {
-                a.WithOwner();
-                a.Property(x => x.Street).HasColumnName("ShippingStreet").HasColumnType("NVARCHAR(100)");
-                a.Property(x => x.City).HasColumnName("ShippingCity").HasColumnType("NVARCHAR(100)");
-                a.Property(x => x.State).HasColumnName("ShippingState").HasColumnType("NVARCHAR(100)");
-                a.Property(x => x.PostalCode).HasColumnName("ShippingPostalCode").HasColumnType("NVARCHAR(100)");
-                a.Property(x => x.Country).HasColumnName("ShippingCountry").HasColumnType("NVARCHAR(100)");
+                sa.WithOwner();
+                sa.Property(sa => sa.Street).HasColumnName("ShippingStreet").HasColumnType("NVARCHAR(100)");
+                sa.Property(sa => sa.City).HasColumnName("ShippingCity").HasColumnType("NVARCHAR(100)");
+                sa.Property(sa => sa.State).HasColumnName("ShippingState").HasColumnType("NVARCHAR(100)");
+                sa.Property(sa => sa.PostalCode).HasColumnName("ShippingPostalCode").HasColumnType("NVARCHAR(100)");
+                sa.Property(sa => sa.Country).HasColumnName("ShippingCountry").HasColumnType("NVARCHAR(100)");
             });
 
             //one to many relation with OrderItems

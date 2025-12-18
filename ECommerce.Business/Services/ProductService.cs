@@ -23,7 +23,15 @@ namespace ECommerce.Business.Services
 
         public async Task<PagedResponseDto<AdminProductDto>> GetAllProductsAdminAsync(AdminProductSpecParams specParams)
         {
-            var query = _context.Products.AsNoTracking().AsQueryable();
+            var query = _context.Products.IgnoreQueryFilters().AsNoTracking().AsQueryable();
+
+            //Filter
+            query = specParams.Status switch
+            {
+                "active" => query.Where(p => !p.IsDeleted),
+                "archived" => query.Where(p => p.IsDeleted),
+                _ => query
+            };
 
             //Search
             if (!string.IsNullOrEmpty(specParams.Search))
@@ -148,7 +156,7 @@ namespace ECommerce.Business.Services
         {
             var productToDelete = await _context.Products.FindAsync(productId)
                 ?? throw new NotFoundException("Product does not exist.");
-            _context.Products.Remove(productToDelete);
+            productToDelete.IsDeleted = true;
             await _context.SaveChangesAsync();
 
             if (_logger.IsEnabled(LogLevel.Information))

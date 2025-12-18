@@ -18,6 +18,8 @@ namespace ECommerce.Data.Config
                 .IsUnique()
                 .HasFilter("[IsMain] = 1");
 
+            builder.HasQueryFilter(pi => !pi.Product.IsDeleted);
+
         }
     }
 }

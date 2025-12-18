@@ -20,6 +20,7 @@ namespace ECommerce.Data.Config
             builder.Property(p => p.Version)
                 .IsRowVersion();
 
+            builder.HasQueryFilter(p => !p.IsDeleted);
 
             //one to many Relationship with ProductImage
             builder.HasMany(p => p.Images)
@@ -31,7 +32,8 @@ namespace ECommerce.Data.Config
             builder.HasMany(p => p.OrderItems)
                 .WithOne(oi => oi.Product)
                 .HasForeignKey(oi => oi.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
 
             //one to many relation with CartItems
             builder.HasMany(p => p.CartItems)
