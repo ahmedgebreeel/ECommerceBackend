@@ -13,12 +13,11 @@ using Microsoft.Extensions.Logging;
 
 namespace ECommerce.Business.Services
 {
-    public class ProductService(AppDbContext context, IMapper mapper, ILogger<ProductService> logger, IProductImageService productImages) : IProductService
+    public class ProductService(AppDbContext context, IMapper mapper, ILogger<ProductService> logger) : IProductService
     {
         private readonly AppDbContext _context = context;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<ProductService> _logger = logger;
-        private readonly IProductImageService _productImages = productImages;
 
 
         public async Task<PagedResponseDto<AdminProductDto>> GetAllProductsAdminAsync(AdminProductSpecParams specParams)
@@ -175,9 +174,9 @@ namespace ECommerce.Business.Services
             query = query.Where(p => p.StockQuantity > 0);
 
             //Filter with Brands
-            if (specParams.BrandIds.Count > 0)
+            if (specParams.BrandsIdsList.Count > 0)
             {
-                query = query.Where(p => specParams.BrandIds.Contains(p.BrandId));
+                query = query.Where(p => specParams.BrandsIdsList.Contains(p.BrandId));
             }
 
             //Filter with Category
@@ -207,7 +206,7 @@ namespace ECommerce.Business.Services
             //Search
             if (!string.IsNullOrEmpty(specParams.Search))
             {
-                query = query.Where(p => p.Name.ToLower().Contains(specParams.Search.ToLower()));
+                query = query.Where(p => p.Name.Contains(specParams.Search));
             }
 
             //Sort

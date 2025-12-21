@@ -9,11 +9,11 @@ using ECommerce.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+
 
 namespace ECommerce.API.Extensions
 {
@@ -62,22 +62,23 @@ namespace ECommerce.API.Extensions
                         "http://localhost:4200",
                         "https://ec-frontend-amber.vercel.app",
                         "https://finalproject1.runasp.net"
-                        ) // Angular Port
+                        )
                           .AllowAnyHeader()
                           .AllowAnyMethod()
-                          .AllowCredentials(); // Required for HttpOnly Cookies
+                          .AllowCredentials();
                 });
             });
 
             //Controllers Configuration
             services.AddControllers()
+                //Enums Conversion to string 
                 .AddJsonOptions(options =>
                 {
-                    // accept enums as strings, case insensitive
                     options.JsonSerializerOptions.Converters.Add(
                         new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
                     );
                 })
+                //Configuring default 400 validation error responses and logging to look the same as custom errors.
                 .ConfigureApiBehaviorOptions(options =>
                 {
                     options.InvalidModelStateResponseFactory = context =>
@@ -111,80 +112,107 @@ namespace ECommerce.API.Extensions
                 {
                     options.PermitLimit = 60;
                     options.Window = TimeSpan.FromMinutes(1);
-                    options.SegmentsPerWindow = 3; // Splits minute into 20s segments for smoothing
+                    options.SegmentsPerWindow = 3;
                     options.QueueLimit = 5;
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                 });
             });
 
-            //OpenApi
-            services.AddOpenApi(options =>
+            services.AddSwaggerGen(c =>
             {
-                options.AddDocumentTransformer((document, context, cancellationToken) =>
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    document.Info = new OpenApiInfo
-                    {
-                        Title = "ECommerce API",
-                        Version = "v1",
-                        Description = "API for E-Commerce Backend with JWT Authentication"
-                    };
-
-                    document.Components ??= new OpenApiComponents();
-                    document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
-                    {
-                        Type = SecuritySchemeType.Http,
-                        Scheme = "bearer",
-                        BearerFormat = "JWT",
-                        In = ParameterLocation.Header,
-                        Description = "Enter your valid token."
-                    });
-
-                    return Task.CompletedTask;
+                    Title = "ECommerce API",
+                    Version = "v1",
+                    Description = "API for E-Commerce Backend with JWT Authentication"
                 });
-                options.AddSchemaTransformer((schema, context, cancellationToken) =>
+
+                c.UseInlineDefinitionsForEnums();
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    if (context.JsonTypeInfo.Type.IsEnum)
-                    {
-                        schema.Type = "string";
-                        schema.Format = null; // Clear any "int32" formatting
-                        schema.Enum = Enum.GetNames(context.JsonTypeInfo.Type)
-                            .Select(name => new OpenApiString(JsonNamingPolicy.CamelCase.ConvertName(name)))
-                            .Cast<IOpenApiAny>()
-                            .ToList();
-                    }
-                    return Task.CompletedTask;
+                    Name = "Authorization",
+                    Description = "Enter 'Bearer' [space] and then your valid token.\r\n\r\nExample: \"Bearer eyJhbGci...\"",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
                 });
-                options.AddOperationTransformer((operation, context, cancellationToken) =>
-                {
-                    var metadata = context.Description.ActionDescriptor.EndpointMetadata;
 
-                    bool hasAuthorize = metadata.Any(m => m is Microsoft.AspNetCore.Authorization.AuthorizeAttribute);
-                    bool hasAnonymous = metadata.Any(m => m is Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute);
-
-                    if (hasAuthorize && !hasAnonymous)
-                    {
-                        operation.Security = new List<OpenApiSecurityRequirement>
-                        {
-                            new()
-                            {
-                                {
-                                    new OpenApiSecurityScheme
-                                    {
-                                        Reference = new OpenApiReference
-                                        {
-                                            Type = ReferenceType.SecurityScheme,
-                                            Id = "Bearer"
-                                        }
-                                    },
-                                    Array.Empty<string>()
-                                }
-                            }
-                        };
-                    }
-
-                    return Task.CompletedTask;
-                });
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
+
+            //OpenApi
+            //services.AddOpenApi(options =>
+            //{
+            //    //Configuring Openapi for swagger ui to work with jwt authentication
+            //    options.AddDocumentTransformer((document, context, cancellationToken) =>
+            //    {
+            //        document.Info = new OpenApiInfo
+            //        {
+            //            Title = "ECommerce API",
+            //            Version = "v1",
+            //            Description = "API for E-Commerce Backend with JWT Authentication"
+            //        };
+
+            //        document.Components ??= new OpenApiComponents();
+            //        document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
+            //        {
+            //            Type = SecuritySchemeType.Http,
+            //            Scheme = "bearer",
+            //            BearerFormat = "JWT",
+            //            In = ParameterLocation.Header,
+            //            Description = "Enter your valid token."
+            //        });
+
+            //        return Task.CompletedTask;
+            //    });
+
+            //    //Configuring Openapi to add support for enum inputs
+            //    options.AddSchemaTransformer((schema, context, cancellationToken) =>
+            //    {
+            //        if (context.JsonTypeInfo.Type.IsEnum)
+            //        {
+            //            schema.Type = "string";
+            //            schema.Format = null;
+            //            schema.Enum = Enum.GetNames(context.JsonTypeInfo.Type)
+            //                .Select(name => new OpenApiString(JsonNamingPolicy.CamelCase.ConvertName(name)))
+            //                .Cast<IOpenApiAny>()
+            //                .ToList();
+            //        }
+            //        return Task.CompletedTask;
+            //    });
+            //    //Configuring Openapi to work with jwt authentication and fixing products query param "brands" from int to string like this 1,3,6
+            //    options.AddOperationTransformer((operation, context, cancellationToken) =>
+            //    {
+            //        var metadata = context.Description.ActionDescriptor.EndpointMetadata;
+
+            //        bool hasAuthorize = metadata.Any(m => m is Microsoft.AspNetCore.Authorization.AuthorizeAttribute);
+            //        bool hasAnonymous = metadata.Any(m => m is Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute);
+
+            //        if (hasAuthorize && !hasAnonymous)
+            //        {
+            //            operation.Security = new List<OpenApiSecurityRequirement>
+            //            {
+            //                new()
+            //                {
+            //                    {
+            //                        new OpenApiSecurityScheme
+            //                        {
+            //                            Reference = new OpenApiReference
+            //                            {
+            //                                Type = ReferenceType.SecurityScheme,
+            //                                Id = "Bearer"
+            //                            }
+            //                        },
+            //                        Array.Empty<string>()
+            //                    }
+            //                }
+            //            };
+            //        }
+            //        return Task.CompletedTask;
+            //    });
+            //});
 
             return services;
         }

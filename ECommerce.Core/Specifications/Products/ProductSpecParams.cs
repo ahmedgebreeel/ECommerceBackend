@@ -1,22 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ECommerce.Core.Specifications.Products
+﻿namespace ECommerce.Core.Specifications.Products
 {
     public class ProductSpecParams
     {
-
         //Filter Params
-        public List<int> BrandIds = [];
-
-        [DataType(DataType.Text)]
-        public string? Brands
+        public List<int> BrandsIdsList = [];
+        public string? BrandsIds
         {
-            get => string.Join(",", BrandIds);
+            get => string.Join(",", BrandsIdsList);
+
             set
             {
                 if (!string.IsNullOrEmpty(value))
                 {
-                    BrandIds = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    BrandsIdsList = value.Split(',', StringSplitOptions.RemoveEmptyEntries)
                                     .Select(int.Parse)
                                     .ToList();
                 }
