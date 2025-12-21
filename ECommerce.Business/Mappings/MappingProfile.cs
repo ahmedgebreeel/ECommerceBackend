@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using ECommerce.Business.DTOs.Addresses;
 using ECommerce.Business.DTOs.Auth;
-using ECommerce.Business.DTOs.Brands;
+using ECommerce.Business.DTOs.Brands.Admin;
+using ECommerce.Business.DTOs.Brands.Store;
 using ECommerce.Business.DTOs.Categories.Admin;
 using ECommerce.Business.DTOs.Categories.Store;
 using ECommerce.Business.DTOs.OrderItems;
@@ -22,10 +23,15 @@ namespace ECommerce.Business.Mappings
         public MappingProfile()
         {
             //Brand Mapping
+            CreateMap<Brand, AdminBrandDto>()
+                .ForMember(d => d.ProductsCount,
+                o => o.MapFrom(s => s.Products.Count));
+            CreateMap<Brand, AdminBrandDetailsDto>();
+            CreateMap<AdminCreateBrandDto, Brand>();
+            CreateMap<AdminUpdateBrandDto, Brand>();
             CreateMap<Brand, BrandDto>()
-                .ForMember(dest => dest.ProductsCount, opt => opt.MapFrom(src => src.Products.Count));
-            CreateMap<CreateBrandDto, Brand>();
-            CreateMap<UpdateBrandDto, Brand>();
+                .ForMember(d => d.ProductsCount,
+                o => o.MapFrom(s => s.Products.Count));
 
             //Category Mapping
             CreateMap<Category, AdminCategoryDto>()

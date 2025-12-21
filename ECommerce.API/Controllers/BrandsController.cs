@@ -1,77 +1,98 @@
-﻿//using ECommerce.Business.DTOs.Brands;
-//using ECommerce.Business.DTOs.Errors;
-//using ECommerce.Business.Interfaces;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
+﻿using ECommerce.Business.DTOs.Brands.Admin;
+using ECommerce.Business.DTOs.Brands.Store;
+using ECommerce.Business.DTOs.Errors;
+using ECommerce.Business.DTOs.Pagination;
+using ECommerce.Business.Interfaces;
+using ECommerce.Core.Specifications.Brands;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-//namespace ECommerce.API.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    [Tags("Brands Management")]
-//    public class BrandsController(IBrandService brands) : ControllerBase
-//    {
-//        private readonly IBrandService _brands = brands;
+namespace ECommerce.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Tags("Brands Management")]
+    public class BrandsController(IBrandService brands) : ControllerBase
+    {
+        private readonly IBrandService _brands = brands;
 
-//        [HttpGet]
-//        [EndpointSummary("Get all brands")]
-//        [EndpointDescription("Retrieves a complete list of all product brands available in the system.")]
-//        [ProducesResponseType(typeof(IEnumerable<BrandDto>), StatusCodes.Status200OK)]
-//        public async Task<IActionResult> GetAll() => Ok(await _brands.GetAllAsync());
+        [HttpGet("admin")]
+        [Authorize(Roles = "Admin")]
+        [EndpointSummary("Get all brands with paging and search support.")]
+        [ProducesResponseType(typeof(PagedResponseDto<AdminBrandDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetAllBrandsAsmin([FromQuery] AdminBrandSpecParams specParams)
+        {
+            var brands = await _brands.GetAllBrandsAdminAsync(specParams);
+            return Ok(brands);
+        }
+
+        [HttpGet("admin/{brandId:int}")]
+        [Authorize(Roles = "Admin")]
+        [EndpointSummary("Get brand details.")]
+        [ProducesResponseType(typeof(AdminBrandDetailsDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetBrandDetailsAdmin([FromRoute] int brandId)
+        {
+            var brand = await _brands.GetBrandDetailsAdminAsync(brandId);
+            return Ok(brand);
+        }
+
+        [HttpPost("admin")]
+        [Authorize(Roles = "Admin")]
+        [EndpointSummary("Create a new brand.")]
+        [ProducesResponseType(typeof(AdminBrandDetailsDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> CreateBrandAdmin([FromBody] AdminCreateBrandDto dto)
+        {
+            var brandCreated = await _brands.CreateBrandAdminAsync(dto);
+            return CreatedAtAction(nameof(GetBrandDetailsAdmin), new { brandCreated.Id }, brandCreated);
+        }
 
 
-//        [HttpGet("{id:int}")]
-//        [EndpointSummary("Get brand details")]
-//        [EndpointDescription("Retrieves the details of a specific brand by its unique ID.")]
-//        [ProducesResponseType(typeof(BrandDto), StatusCodes.Status200OK)]
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status404NotFound)]
-//        public async Task<IActionResult> GetById([FromRoute] int id) => Ok(await _brands.GetByIdAsync(id));
+        [HttpPost("admin/{brandId:int}")]
+        [Authorize(Roles = "Admin")]
+        [EndpointSummary("Update existing brand.")]
+        [ProducesResponseType(typeof(AdminBrandDetailsDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateBrandAdmin([FromRoute] int brandId, [FromBody] AdminUpdateBrandDto dto)
+        {
+            var brandUpdated = await _brands.UpdateBrandAdminAsync(brandId, dto);
+            return Ok(brandUpdated);
+        }
 
+        [HttpDelete("admin/{brandId:int}")]
+        [Authorize(Roles = "Admin")]
+        [EndpointSummary("Delete existing brand if no products are referencing it.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> DeleteBrandAdmin([FromRoute] int brandId)
+        {
+            await _brands.DeleteBrandAdminAsync(brandId);
+            return NoContent();
+        }
 
-//        [HttpPost]
-//        [Authorize(Roles = "Admin")]
-//        [EndpointSummary("Create a new brand")]
-//        [EndpointDescription("Creates a new brand. Restricted to Administrators.")]
-//        [ProducesResponseType(typeof(BrandDto), StatusCodes.Status201Created)]
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status400BadRequest)] // Validation errors
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)] // Not logged in
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status403Forbidden)] // Logged in but not Admin
-//        public async Task<IActionResult> Create([FromBody] CreateBrandDto dto)
-//        {
-//            var createdBrand = await _brands.CreateAsync(dto);
-//            return CreatedAtAction(nameof(GetById), new { id = createdBrand.Id }, createdBrand);
-//        }
+        [HttpGet]
+        [EndpointSummary("Get all brands.")]
+        [ProducesResponseType(typeof(IEnumerable<BrandDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllBrands()
+        {
+            var brands = await _brands.GetAllBrandsAsync();
+            return Ok(brands);
+        }
 
-//        [HttpPut("{id:int}")]
-//        [Authorize(Roles = "Admin")]
-//        [EndpointSummary("Update a brand")]
-//        [EndpointDescription("Updates an existing brand's name or description. Restricted to Administrators.")]
-//        [ProducesResponseType(typeof(BrandDto), StatusCodes.Status200OK)]
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status400BadRequest)] // Validation errors
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status403Forbidden)]
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status404NotFound)]
-//        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateBrandDto dto)
-//        {
-//            var updatedBrand = await _brands.UpdateAsync(id, dto);
-//            return Ok(updatedBrand);
-//        }
-
-//        [HttpDelete("{id:int}")]
-//        [Authorize(Roles = "Admin")]
-//        [EndpointSummary("Delete a brand")]
-//        [EndpointDescription("Permanently deletes a brand. Fails if the brand has associated products (returns 409 Conflict). Restricted to Administrators.")]
-//        [ProducesResponseType(StatusCodes.Status204NoContent)] // Success (No Body)
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status403Forbidden)]
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status404NotFound)]
-//        [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status409Conflict)] // Cannot delete because products exist
-
-//        public async Task<IActionResult> Delete([FromRoute] int id)
-//        {
-//            await _brands.DeleteAsync(id);
-//            return NoContent();
-//        }
-
-//    }
-//}
+    }
+}

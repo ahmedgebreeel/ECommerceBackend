@@ -139,7 +139,8 @@ namespace ECommerce.Business.Services
 
         public async Task DeleteCategoryAdminAsync(int categoryId)
         {
-            var categoryToDelete = await _context.Categories.FindAsync(categoryId) ?? throw new NotFoundException("Category does not exist");
+            var categoryToDelete = await _context.Categories.FindAsync(categoryId)
+                ?? throw new NotFoundException("Category does not exist");
 
             //check if category has subcategories
             var hasSubcategories = await _context.Categories.AnyAsync(c => c.ParentId == categoryId);
