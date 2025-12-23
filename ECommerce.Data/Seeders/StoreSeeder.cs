@@ -49,37 +49,37 @@ namespace ECommerce.Data.Seeders
             categories.AddRange(new[] { men, women, kids });
 
             // --- MEN ---
-            var mClothing = CreateChild(men, "Clothing");
-            var mFootwear = CreateChild(men, "Footwear");
-            var mAccess = CreateChild(men, "Accessories");
+            var mClothing = CreateChild(men, "Men's Clothing");
+            var mFootwear = CreateChild(men, "Men's Footwear");
+            var mAccess = CreateChild(men, "Men's Accessories");
             categories.AddRange(new[] { mClothing, mFootwear, mAccess });
 
             // Men Leaves
-            categories.Add(CreateChild(mClothing, "T-Shirts"));
-            categories.Add(CreateChild(mClothing, "Jeans"));
-            categories.Add(CreateChild(mFootwear, "Sneakers"));
-            categories.Add(CreateChild(mFootwear, "Formal Shoes"));
-            categories.Add(CreateChild(mAccess, "Watches"));
+            categories.Add(CreateChild(mClothing, "Men's T-Shirts"));
+            categories.Add(CreateChild(mClothing, "Men's Jeans"));
+            categories.Add(CreateChild(mFootwear, "Men's Sneakers"));
+            categories.Add(CreateChild(mFootwear, "Men's Formal Shoes"));
+            categories.Add(CreateChild(mAccess, "Men's Watches"));
 
             // --- WOMEN ---
-            var wClothing = CreateChild(women, "Clothing");
-            var wFootwear = CreateChild(women, "Footwear");
-            var wAccess = CreateChild(women, "Accessories");
+            var wClothing = CreateChild(women, "Women's Clothing");
+            var wFootwear = CreateChild(women, "Women's Footwear");
+            var wAccess = CreateChild(women, "Women's Accessories");
             categories.AddRange(new[] { wClothing, wFootwear, wAccess });
 
             // Women Leaves
-            categories.Add(CreateChild(wClothing, "Dresses"));
-            categories.Add(CreateChild(wClothing, "Tops"));
-            categories.Add(CreateChild(wFootwear, "Heels"));
-            categories.Add(CreateChild(wAccess, "Handbags"));
+            categories.Add(CreateChild(wClothing, "Women's Dresses"));
+            categories.Add(CreateChild(wClothing, "Women's Tops"));
+            categories.Add(CreateChild(wFootwear, "Women's Heels"));
+            categories.Add(CreateChild(wAccess, "Women's Handbags"));
 
             // --- KIDS ---
-            var kClothing = CreateChild(kids, "Clothing");
-            var kFootwear = CreateChild(kids, "Footwear");
+            var kClothing = CreateChild(kids, "Kids' Clothing");
+            var kFootwear = CreateChild(kids, "Kids' Footwear");
             categories.AddRange(new[] { kClothing, kFootwear });
 
-            categories.Add(CreateChild(kClothing, "Baby Wear"));
-            categories.Add(CreateChild(kFootwear, "School Shoes"));
+            categories.Add(CreateChild(kClothing, "Kids' Baby Wear"));
+            categories.Add(CreateChild(kFootwear, "Kids' School Shoes"));
 
             context.Categories.AddRange(categories);
             await context.SaveChangesAsync();
@@ -112,21 +112,21 @@ namespace ECommerce.Data.Seeders
             var productBlueprints = new Dictionary<string, string[]>
             {
                 // --- MEN ---
-                { "T-Shirts", new[] { "Essential Crew Neck", "Graphic Print Tee", "Oversized Cotton T-Shirt", "Vintage Logo Tee", "Performance Polo" } },
-                { "Jeans", new[] { "Slim Fit Denim", "Straight Leg Jeans", "Ripped Wash Jeans", "Tapered Cargo Pants", "Classic Blue Jeans" } },
-                { "Sneakers", new[] { "Air Runner 500", "Court Vision Low", "Ultralight Jogger", "Retro High-Top", "Streetwear Skate Shoe" } },
-                { "Formal Shoes", new[] { "Leather Oxford", "Classic Brogues", "Suede Loafers", "Derby Shoes" } },
-                { "Watches", new[] { "Chronograph Steel", "Minimalist Leather Watch", "Digital Sport Watch", "Automatic Diver" } },
+                { "Men's T-Shirts", new[] { "Essential Crew Neck", "Graphic Print Tee", "Oversized Cotton T-Shirt", "Vintage Logo Tee", "Performance Polo" } },
+                { "Men's Jeans", new[] { "Slim Fit Denim", "Straight Leg Jeans", "Ripped Wash Jeans", "Tapered Cargo Pants", "Classic Blue Jeans" } },
+                { "Men's Sneakers", new[] { "Air Runner 500", "Court Vision Low", "Ultralight Jogger", "Retro High-Top", "Streetwear Skate Shoe" } },
+                { "Men's Formal Shoes", new[] { "Leather Oxford", "Classic Brogues", "Suede Loafers", "Derby Shoes" } },
+                { "Men's Watches", new[] { "Chronograph Steel", "Minimalist Leather Watch", "Digital Sport Watch", "Automatic Diver" } },
 
                 // --- WOMEN ---
-                { "Dresses", new[] { "Floral Summer Dress", "Elegant Evening Gown", "Casual Midi Dress", "Wrap Dress", "Knitted Sweater Dress" } },
-                { "Tops", new[] { "Silk Blouse", "Crop Top", "Linen Button-Up", "Chiffon Tunic" } },
-                { "Heels", new[] { "Classic Stilettos", "Block Heel Sandals", "Pointed Toe Pumps", "Ankle Strap Heels" } },
-                { "Handbags", new[] { "Leather Tote", "Quilted Crossbody", "Clutch Bag", "Designer Shoulder Bag" } },
+                { "Women's Dresses", new[] { "Floral Summer Dress", "Elegant Evening Gown", "Casual Midi Dress", "Wrap Dress", "Knitted Sweater Dress" } },
+                { "Women's Tops", new[] { "Silk Blouse", "Crop Top", "Linen Button-Up", "Chiffon Tunic" } },
+                { "Women's Heels", new[] { "Classic Stilettos", "Block Heel Sandals", "Pointed Toe Pumps", "Ankle Strap Heels" } },
+                { "Women's Handbags", new[] { "Leather Tote", "Quilted Crossbody", "Clutch Bag", "Designer Shoulder Bag" } },
 
                 // --- KIDS ---
-                { "Baby Wear", new[] { "Cotton Onesie", "Soft Knit Set", "Animal Print Romper", "Cozy Sleepsuit" } },
-                { "School Shoes", new[] { "Durable Leather Shoes", "Velcro Strap Sneakers", "Black Formal Shoes" } }
+                { "Kids' Baby Wear", new[] { "Cotton Onesie", "Soft Knit Set", "Animal Print Romper", "Cozy Sleepsuit" } },
+                { "Kids' School Shoes", new[] { "Durable Leather Shoes", "Velcro Strap Sneakers", "Black Formal Shoes" } }
             };
 
             // Loop through our defined blueprints and create products for matching categories

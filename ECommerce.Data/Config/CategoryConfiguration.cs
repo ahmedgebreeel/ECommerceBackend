@@ -11,6 +11,8 @@ namespace ECommerce.Data.Config
             builder.Property(x => x.Name)
                 .HasColumnType("NVARCHAR(50)");
 
+            builder.HasIndex(x => x.Name)
+                .IsUnique();
 
             builder.Property(x => x.Description)
                 .HasColumnType("NVARCHAR(MAX)");
