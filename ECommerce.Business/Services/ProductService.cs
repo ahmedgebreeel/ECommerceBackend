@@ -157,7 +157,12 @@ namespace ECommerce.Business.Services
 
         public async Task<PagedResponseDto<ProductDto>> GetAllProductsAsync(ProductSpecParams specParams)
         {
-            var query = _context.Products.AsNoTracking().AsQueryable();
+            var query = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.Images)
+                .AsNoTracking()
+                .AsQueryable();
 
             //Filter
             //show in stock products only.
@@ -230,6 +235,9 @@ namespace ECommerce.Business.Services
         public async Task<ProductDetailsDto> GetProductDetailsAsync(int productId)
         {
             var product = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.Images)
                 .AsNoTracking()
                 .Where(p => p.Id == productId)
                 .ProjectTo<ProductDetailsDto>(_mapper.ConfigurationProvider)
