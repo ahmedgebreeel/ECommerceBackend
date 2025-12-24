@@ -20,7 +20,7 @@ namespace ECommerce.API.Controllers
 
 
         [HttpGet("admin")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Seller")]
         [EndpointSummary("Get all orders for admin dashboard.")]
         [ProducesResponseType(typeof(PagedResponseDto<AdminOrderDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
@@ -31,7 +31,7 @@ namespace ECommerce.API.Controllers
 
 
         [HttpGet("admin/{orderId:int}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Seller")]
         [EndpointSummary("Get order details for an order.")]
         [ProducesResponseType(typeof(AdminOrderDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
@@ -42,7 +42,7 @@ namespace ECommerce.API.Controllers
 
 
         [HttpPut("admin/{orderId:int}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Seller")]
         [EndpointSummary("Update order status , shipping address (if applicable).")]
         [ProducesResponseType(typeof(AdminOrderDetailsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status400BadRequest)]
@@ -56,7 +56,7 @@ namespace ECommerce.API.Controllers
         }
 
         [HttpDelete("admin/{orderId:int}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Seller")]
         [EndpointSummary("Delete an order.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ApiErrorResponseDto), StatusCodes.Status401Unauthorized)]
