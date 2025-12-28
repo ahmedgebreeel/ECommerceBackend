@@ -10,6 +10,9 @@ namespace ECommerce.Data.Config
         {
             builder.Property(u => u.FirstName).HasMaxLength(50);
             builder.Property(u => u.LastName).HasMaxLength(50);
+            builder.Property(u => u.UserName).HasMaxLength(30).IsRequired();
+            builder.Property(u => u.Email).HasMaxLength(256).IsRequired();
+
 
             //one to many relation with orders
             builder.HasMany(u => u.Orders)
