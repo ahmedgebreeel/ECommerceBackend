@@ -18,12 +18,18 @@ namespace ECommerce.Data.Config
             builder.Property(c => c.HierarchyPath)
                 .HasColumnType("NVARCHAR(500)");
 
-            //one to many relation with Product
+            //One To Many Relation With Category ( Category (1) -> (N) Category )
+            builder.HasMany(c => c.SubCategories)
+                .WithOne(c => c.Parent)
+                .HasForeignKey(c => c.ParentId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //One to Many Relation With Product ( Category (1) -> (N) Product )
             builder.HasMany(c => c.Products)
                 .WithOne(p => p.Category)
                 .HasForeignKey(p => p.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
-
         }
     }
 }

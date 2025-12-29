@@ -13,26 +13,31 @@ namespace ECommerce.Data.Config
             builder.Property(u => u.UserName).HasMaxLength(30).IsRequired();
             builder.Property(u => u.Email).HasMaxLength(256).IsRequired();
 
-
-            //one to many relation with orders
-            builder.HasMany(u => u.Orders)
-                .WithOne(o => o.User)
-                .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            //one to many relation with addresses
-            builder.HasMany(u => u.Addresses)
-                .WithOne(a => a.User)
-                .HasForeignKey(a => a.UserId)
+            //One to One Relation with Wishlist ( ApplicationUser (1) -> (1) Wishlist )
+            builder.HasOne(u => u.Wishlist)
+                .WithOne(w => w.User)
+                .HasForeignKey<Wishlist>(w => w.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //one to one relation with ShoppingCart
+            //One to One Relation with ShoppingCart ( ApplicationUser (1) -> (1) ShoppingCart )
             builder.HasOne(u => u.ShoppingCart)
                 .WithOne(sc => sc.User)
                 .HasForeignKey<ShoppingCart>(sc => sc.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //one to many relation with RefreshTokens
+            //One to Many Relation with Order ( ApplicationUser (1) -> (N) Order )
+            builder.HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //One to Many Relation with Address ( ApplicationUser (1) -> (N) Address )
+            builder.HasMany(u => u.Addresses)
+                .WithOne(a => a.User)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //One to Many Relation with RefreshToken ( ApplicationUser (1) -> (N) RefreshToken)
             builder.HasMany(u => u.RefreshTokens)
                 .WithOne(rt => rt.User)
                 .HasForeignKey(rt => rt.UserId)

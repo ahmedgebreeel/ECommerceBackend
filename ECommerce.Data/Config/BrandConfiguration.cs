@@ -17,7 +17,7 @@ namespace ECommerce.Data.Config
                 .HasColumnType("NVARCHAR(1000)");
 
 
-            //one to many relation with Product
+            //One to Many Relation with Product ( Brand (1) -> (N) Product)
             builder.HasMany(b => b.Products)
                 .WithOne(p => p.Brand)
                 .HasForeignKey(p => p.BrandId)

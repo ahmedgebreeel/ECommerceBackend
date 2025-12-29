@@ -14,16 +14,22 @@ namespace ECommerce.Core.Entities
         public decimal TotalAmount { get; set; }
         public ShippingMethod ShippingMethod { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
+
+        //Owned Entity (Snapshot)
         public OrderAddress ShippingAddress { get; set; } = null!;
 
-        //many to one relation with User
+        //Parent -> Child(Order
+
+        //One to Many Relation With ApplicationUser ( ApplicationUser (1) -> (N) Order )
         public string UserId { get; set; } = null!;
         public virtual ApplicationUser User { get; set; } = null!;
 
-        //one to many relation with OrderItems
+        //Parent(Order) -> Child
+
+        //One to Many Relation with OrderItem ( Order (1) -> (N) OrderItem )
         public virtual ICollection<OrderItem> Items { get; set; } = [];
 
-        //one to many relation with OrderTrackingMilestones
+        //One to Many Relation With OrderTrackingMilestone ( Order (1) -> (N) OrderTrackingMilestone )
         public virtual ICollection<OrderTrackingMilestone> OrderTrackingMilestones { get; set; } = [];
     }
 }

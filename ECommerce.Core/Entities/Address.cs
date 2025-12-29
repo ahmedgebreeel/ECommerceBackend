@@ -22,7 +22,9 @@
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
 
-        //many to one relation with user
+        //Parent -> Child(Address)
+
+        //One to Many Relation with ApplicationUser ( ApplicationUser (1) -> (N) Address )
         public string UserId { get; set; } = null!;
         public virtual ApplicationUser User { get; set; } = null!;
     }

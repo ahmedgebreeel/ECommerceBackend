@@ -8,7 +8,9 @@ namespace ECommerce.Core.Entities
         public OrderStatus Status { get; set; }
         public DateTime TimeStamp { get; set; }
 
-        //many to one relation with order
+        //Parent -> Child(OrderTrackingMilestone)
+
+        //One to Many Relation with Order ( Order (1) -> (N) OrderTrackingMilestone )
         public int OrderId { get; set; }
         public virtual Order Order { get; set; } = null!;
     }

@@ -5,11 +5,15 @@
         public int Id { get; set; }
         public DateTime Updated { get; set; }
 
-        //one to one relation with user
+        //Parent -> Child(ShoppingCart)
+
+        //One to One Relation with ApplicationUser ( ApplicationUser (1) -> (1) ShoppingCart )
         public string UserId { get; set; } = null!;
         public virtual ApplicationUser User { get; set; } = null!;
 
-        //one to many relation with cartItems
+        //Parent(ShoppingCart) -> Child
+
+        //One to Many Relation with CartItem ( ShoppingCart (1) -> (N) CartItem )
         public virtual List<CartItem> Items { get; set; } = [];
     }
 }

@@ -13,19 +13,26 @@
         public bool IsDeleted { get; set; } = false;
         public byte[] Version { get; set; } = [];
 
-        //many to one relation with Category
+        //Parent -> Product(Child)
+
+        //One to Many relation with Category ( Category (1) -> (N) Porduct ) 
         public int CategoryId { get; set; }
         public virtual Category Category { get; set; } = null!;
 
-        //many to one relation with Brand
+        //One to Many relation with Brand ( Brand (1) -> (N) Porduct ) 
         public int BrandId { get; set; }
         public virtual Brand Brand { get; set; } = null!;
 
-        //one to many Relationship with ProductImage
+        //Product(Parent) -> Child
+
+        //One to Many Relationship with ProductImage ( Product (1) -> (N) ProductImage ) 
         public virtual ICollection<ProductImage> Images { get; set; } = [];
 
-        //one to many relation with CartItems
+        //One to Many relation with CartItems ( Product (1) -> (N) CartItem ) 
         public virtual ICollection<CartItem> CartItems { get; set; } = [];
+
+        //One To Many Relation with WishlistItem ( Product (1) -> (N) WishListItem )
+        public virtual ICollection<WishlistItem> WishlistItems { get; set; } = [];
 
     }
 }

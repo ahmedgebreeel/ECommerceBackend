@@ -14,6 +14,7 @@ using ECommerce.Business.DTOs.ProductImages.Responses;
 using ECommerce.Business.DTOs.Products.Requests;
 using ECommerce.Business.DTOs.Products.Responses;
 using ECommerce.Business.DTOs.ShoppingCart.Responses;
+using ECommerce.Business.DTOs.WishlistItem;
 using ECommerce.Core.Entities;
 
 namespace ECommerce.Business.Mappings
@@ -46,7 +47,7 @@ namespace ECommerce.Business.Mappings
                 .ForMember(d => d.PathFromRoot, o => o.MapFrom(s => $"Root\\{s.HierarchyPath}"));
 
             CreateMap<Category, CategoryDetailsResponse>()
-                .ForMember(d => d.SubcategoriesNames, o => o.Ignore())
+                .ForMember(d => d.SubcategoriesNames, o => o.MapFrom(s => s.SubCategories.Select(c => c.Name)))
                 .ForMember(d => d.PathFromRoot, o => o.MapFrom(s => $"Root\\{s.HierarchyPath}"));
 
             CreateMap<CreateCategoryRequest, Category>()
@@ -96,6 +97,13 @@ namespace ECommerce.Business.Mappings
                 .ForMember(d => d.ProductPrice, o => o.MapFrom(s => s.Product.Price))
                 .ForMember(d => d.Total, o => o.MapFrom(s => s.Quantity * s.Product.Price));
 
+            //Wishlist Mapping
+            CreateMap<WishlistItem, WishlistItemSummaryDto>()
+                .ForMember(d => d.ProductThumbnailUrl, o => o.MapFrom(s => s.Product.Images.Where(pi => pi.IsMain).Select(pi => pi.ImageUrl).FirstOrDefault()))
+                .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Product.Name))
+                .ForMember(d => d.ProductPrice, o => o.MapFrom(s => s.Product.Price))
+                .ForMember(d => d.InStock, o => o.MapFrom(s => s.Product.StockQuantity > 0))
+                .ForMember(d => d.IsDeleted, o => o.MapFrom(s => s.Product.IsDeleted));
 
             //Order Mapping
             CreateMap<Order, AdminOrderSummaryDto>()

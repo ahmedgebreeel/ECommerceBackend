@@ -8,7 +8,9 @@
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
 
-        //one to many relation with Product
+        //Parent(Brand) -> Child
+
+        //One to Many Relation with Product ( Brand (1) -> (N) Product)
         public virtual ICollection<Product> Products { get; set; } = [];
     }
 }

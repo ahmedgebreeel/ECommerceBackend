@@ -32,7 +32,7 @@ namespace ECommerce.Data.Config
                 .HasConversion<string>()
                 .HasMaxLength(50);
 
-            //Shipping Address Snapshot
+            //Owned Entity (Snapshot)
             builder.OwnsOne(o => o.ShippingAddress, a =>
             {
                 a.WithOwner();
@@ -50,13 +50,13 @@ namespace ECommerce.Data.Config
 
             });
 
-            //one to many relation with OrderItems
+            //One to Many Relation with OrderItem ( Order (1) -> (N) OrderItem )
             builder.HasMany(o => o.Items)
                 .WithOne(oi => oi.Order)
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //one to many relation with OrderTrackingMilestones
+            //One to Many Relation With OrderTrackingMilestone ( Order (1) -> (N) OrderTrackingMilestone )
             builder.HasMany(o => o.OrderTrackingMilestones)
                 .WithOne(otm => otm.Order)
                 .HasForeignKey(otm => otm.OrderId)

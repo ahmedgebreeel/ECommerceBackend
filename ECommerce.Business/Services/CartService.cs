@@ -39,12 +39,7 @@ namespace ECommerce.Business.Services
             //initialize cart for new users.
             if (cart == null)
             {
-                cart = new ShoppingCart
-                {
-                    UserId = currentUserId,
-                    Updated = DateTime.UtcNow
-                };
-                _context.ShoppingCarts.Add(cart);
+                return new CartResponse();
             }
 
             //check soft deleted products.
@@ -91,7 +86,7 @@ namespace ECommerce.Business.Services
                 //initialize cart for new users
                 if (cart == null)
                 {
-                    cart = new ShoppingCart { UserId = currentUserId, Updated = DateTime.UtcNow };
+                    cart = new ShoppingCart { UserId = currentUserId };
                     _context.ShoppingCarts.Add(cart);
                 }
                 //delete items from Database not included in the update request 

@@ -18,16 +18,22 @@ namespace ECommerce.Data.Config
 
             builder.HasQueryFilter(p => !p.IsDeleted);
 
-            //one to many Relationship with ProductImage
+            //One to Many Relationship with ProductImage ( Product (1) -> (N) ProductImage )
             builder.HasMany(p => p.Images)
                 .WithOne(i => i.Product)
                 .HasForeignKey(i => i.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //one to many relation with CartItems
+            //One to Many relation with CartItems ( Product (1) -> (N) CartItem )
             builder.HasMany(p => p.CartItems)
                 .WithOne(ci => ci.Product)
                 .HasForeignKey(ci => ci.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            //One To Many Relation with WishlistItem ( Product (1) -> (N) WishListItem )
+            builder.HasMany(p => p.WishlistItems)
+                .WithOne(wi => wi.Product)
+                .HasForeignKey(wi => wi.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
         }

@@ -9,6 +9,8 @@ namespace ECommerce.Data.Config
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
             builder.Property(oi => oi.Total).HasPrecision(18, 2);
+
+            //Owned Entity (Snapshot)
             builder.OwnsOne(oi => oi.OrderedProduct, p =>
             {
                 p.WithOwner();

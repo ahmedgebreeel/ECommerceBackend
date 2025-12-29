@@ -11,7 +11,9 @@
         public bool IsExpired => DateTime.UtcNow >= ExpiresOn;
         public bool IsActive => RevokedOn is null && !IsExpired;
 
-        //many to one relation with User
+        //Parent -> Child(RefreshToken)
+
+        //One to Many Relation With ApplicationUser ( ApplicationUser (1) -> (N) RefreshToken )
         public string UserId { get; set; } = null!;
         public virtual ApplicationUser User { get; set; } = null!;
 

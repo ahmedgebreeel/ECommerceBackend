@@ -20,6 +20,7 @@ namespace ECommerce.Data.Config
             builder.Property(a => a.ZipCode).HasMaxLength(50);
             builder.Property(a => a.Hints).HasMaxLength(100);
 
+            //User Can have only one Address as default
             builder.HasIndex(pi => pi.UserId)
                 .IsUnique()
                 .HasFilter("[IsDefault] = 1");

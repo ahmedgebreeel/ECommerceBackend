@@ -10,16 +10,22 @@ namespace ECommerce.Core.Entities
         public string LastName { get; set; } = null!;
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
-        //one to many relation with Orders
-        public virtual ICollection<Order> Orders { get; set; } = [];
 
-        //one to many relation with Addresses
-        public virtual ICollection<Address> Addresses { get; set; } = [];
+        //Parent(ApplicationUser) -> Child
 
-        //one to one relation with ShoppingCart
+        //One to One Relation with Wishlist ( ApplicationUser (1) -> (1) Wishlist )
+        public virtual Wishlist Wishlist { get; set; } = null!;
+
+        //One to One Relation with ShoppingCart ( ApplicationUser (1) -> (1) ShoppingCart )
         public virtual ShoppingCart ShoppingCart { get; set; } = null!;
 
-        //one to many relation with RefreshTokens
+        //One to Many Relation with Order ( ApplicationUser (1) -> (N) Order )
+        public virtual ICollection<Order> Orders { get; set; } = [];
+
+        //One to Many Relation with Address ( ApplicationUser (1) -> (N) Address )
+        public virtual ICollection<Address> Addresses { get; set; } = [];
+
+        //One to Many Relation with RefreshToken ( ApplicationUser (1) -> (N) RefreshToken)
         public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = [];
 
     }
