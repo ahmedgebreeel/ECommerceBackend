@@ -97,12 +97,15 @@ namespace ECommerce.Business.Services
                     .Where(a => a.IsDefault == true)
                     .FirstOrDefault();
 
+                using var transaction = _context.Database.BeginTransaction();
                 if (currentDefaultAddress is not null)
+                {
                     currentDefaultAddress.IsDefault = false;
-
+                    await _context.SaveChangesAsync();
+                }
                 addressToMarkDefault.IsDefault = true;
-
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
                 if (_logger.IsEnabled(LogLevel.Information))
                     _logger.LogInformation("User {currentUserId} changed his default address from address : {currentDefaultAddressId} to address : {addressToMarkDefaultId}", currentUserId, currentDefaultAddress?.Id, addressToMarkDefault.Id);

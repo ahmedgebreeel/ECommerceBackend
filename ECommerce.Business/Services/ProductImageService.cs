@@ -109,6 +109,7 @@ namespace ECommerce.Business.Services
             if (currentMainImage != null)
             {
                 currentMainImage.IsMain = false;
+                await _context.SaveChangesAsync();
             }
             image.IsMain = true;
             await _context.SaveChangesAsync();

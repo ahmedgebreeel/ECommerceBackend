@@ -44,21 +44,24 @@ namespace ECommerce.Business.Services
 
             //check soft deleted products.
             var invalidItems = cart.Items
-                .Where(i => i.Product.IsDeleted)
+                .Where(i => i.Product.IsDeleted || i.Product.StockQuantity == 0)
                 .ToList();
 
             List<string> warnings = [];
 
             if (invalidItems.Count > 0)
             {
-                //remove from Databse
+                //remove from Database
                 _context.CartItems.RemoveRange(invalidItems);
 
                 // Remove from memory so the mapped DTO is clean
                 foreach (var item in invalidItems)
                 {
                     cart.Items.Remove(item);
-                    warnings.Add($"Item '{item.Product.Name}' got removed because it is no longer available.");
+                    if (item.Product.IsDeleted)
+                        warnings.Add($"Item '{item.Product.Name}' got removed because it is no longer available.");
+                    else
+                        warnings.Add($"Item '{item.Product.Name} got removed because it is out of stock.");
                 }
 
                 await _context.SaveChangesAsync();
@@ -92,13 +95,6 @@ namespace ECommerce.Business.Services
                 //delete items from Database not included in the update request 
                 var incomingProductIds = updateCartRequest.Items.Select(i => i.ProductId).Distinct().ToList();
 
-                if (cart.Id > 0)
-                {
-                    await _context.CartItems
-                        .Where(i => i.ShoppingCartId == cart.Id && !incomingProductIds.Contains(i.ProductId))
-                        .ExecuteDeleteAsync();
-                }
-
                 cart.Items.RemoveAll(i => !incomingProductIds.Contains(i.ProductId));
 
                 //update cart
@@ -122,6 +118,11 @@ namespace ECommerce.Business.Services
                     if (product.IsDeleted)
                     {
                         warnings.Add($"Item '{product.Name}' not added because it is no longer available.");
+                        continue;
+                    }
+                    if (product.StockQuantity == 0)
+                    {
+                        warnings.Add($"Item '{product.Name}' not added because it is out of stock.");
                         continue;
                     }
                     //quantity of item in request exceeds the available product stock

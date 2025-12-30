@@ -73,6 +73,7 @@ namespace ECommerce.Business.Services
             var currentUserId = GetCurrentUserId();
             var wishlist = await _context.Wishlists
                 .Include(w => w.Items)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync(w => w.UserId == currentUserId);
 
             if (wishlist == null)
