@@ -8,6 +8,8 @@ namespace ECommerce.Data.Config
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
+            builder.HasQueryFilter(u => !u.IsDeleted);
+
             builder.Property(u => u.AvatarUrl).HasMaxLength(2000);
             builder.Property(u => u.FirstName).HasMaxLength(50);
             builder.Property(u => u.LastName).HasMaxLength(50);

@@ -8,6 +8,8 @@ namespace ECommerce.Data.Config
     {
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
+            builder.HasQueryFilter(oi => !oi.Order.User.IsDeleted);
+
             builder.Property(oi => oi.Total).HasPrecision(18, 2);
 
             //Owned Entity (Snapshot)

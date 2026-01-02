@@ -75,7 +75,7 @@ namespace ECommerce.Business.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ReviewProductSummaryDto> AddReviewAsync(int productId, AddReviewRequest request)
+        public async Task<ReviewProductSummaryDto> AddReviewAsync(int productId, AddReviewRequest addReviewRequest)
         {
             //Validation ( User cannot post a review on a product he has not bought and delivered) , (user cannot post more than once on a product )
             var currentUserId = GetCurrentUserId();
@@ -102,8 +102,8 @@ namespace ECommerce.Business.Services
 
             var reviewToAdd = new Review
             {
-                Rating = request.Rating,
-                Comment = request.Comment,
+                Rating = addReviewRequest.Rating,
+                Comment = addReviewRequest.Comment,
                 HelpfulCount = 0,
                 Created = DateTime.UtcNow,
                 UserId = currentUserId,
@@ -122,7 +122,7 @@ namespace ECommerce.Business.Services
 
         }
 
-        public async Task<ReviewSummaryDto> UpdateReviewAsync(int reviewId, UpdateReviewRequest request)
+        public async Task<ReviewSummaryDto> UpdateReviewAsync(int reviewId, UpdateReviewRequest updateReviewRequest)
         {
             var currentUserId = GetCurrentUserId();
             var reviewToUpdate = await _context.Reviews
@@ -134,8 +134,8 @@ namespace ECommerce.Business.Services
                 .FirstOrDefaultAsync(p => p.Id == reviewToUpdate.ProductId)
                 ?? throw new NotFoundException("Product does not exist");
 
-            reviewToUpdate.Rating = request.Rating;
-            reviewToUpdate.Comment = request.Comment;
+            reviewToUpdate.Rating = updateReviewRequest.Rating;
+            reviewToUpdate.Comment = updateReviewRequest.Comment;
             reviewToUpdate.Updated = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 

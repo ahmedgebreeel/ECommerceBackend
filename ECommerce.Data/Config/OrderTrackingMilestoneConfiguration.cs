@@ -8,7 +8,9 @@ namespace ECommerce.Data.Config
     {
         public void Configure(EntityTypeBuilder<OrderTrackingMilestone> builder)
         {
-            builder.Property(o => o.Status)
+            builder.HasQueryFilter(otm => !otm.Order.User.IsDeleted);
+
+            builder.Property(otm => otm.Status)
                 .HasConversion<string>()
                 .HasMaxLength(50);
         }

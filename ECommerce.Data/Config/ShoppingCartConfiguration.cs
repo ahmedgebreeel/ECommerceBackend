@@ -8,6 +8,8 @@ namespace ECommerce.Data.Config
     {
         public void Configure(EntityTypeBuilder<ShoppingCart> builder)
         {
+            builder.HasQueryFilter(sc => !sc.User.IsDeleted);
+
             //One to Many Relation with CartItem ( ShoppingCart (1) -> (N) CartItem )
             builder.HasMany(sc => sc.Items)
                 .WithOne(i => i.ShoppingCart)

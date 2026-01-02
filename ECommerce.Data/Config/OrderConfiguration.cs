@@ -8,6 +8,8 @@ namespace ECommerce.Data.Config
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
+            builder.HasQueryFilter(o => !o.User.IsDeleted);
+
             builder.Property(o => o.Status)
                 .HasConversion<string>()
                 .HasMaxLength(50);

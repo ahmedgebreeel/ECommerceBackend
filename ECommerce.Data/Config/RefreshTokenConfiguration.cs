@@ -8,6 +8,7 @@ namespace ECommerce.Data.Config
     {
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
+            builder.HasQueryFilter(rt => !rt.User.IsDeleted);
             builder.Property(rt => rt.Token).HasMaxLength(100);
         }
     }

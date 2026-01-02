@@ -23,10 +23,11 @@ namespace ECommerce.Business.Services
         private readonly ITokenService _tokenService = tokenService;
         private readonly AppDbContext _context = context;
 
-        public async Task<(AuthResponse, string, DateTime)> RegisterAsync(RegisterRequest registerRequestDto)
+        public async Task<(AuthResponse, string, DateTime)> RegisterAsync(RegisterRequest registerRequest)
         {
-            var userToCreate = _mapper.Map<ApplicationUser>(registerRequestDto);
-            var result = await _userManager.CreateAsync(userToCreate, registerRequestDto.Password);
+            var userToCreate = _mapper.Map<ApplicationUser>(registerRequest);
+
+            var result = await _userManager.CreateAsync(userToCreate, registerRequest.Password);
 
             if (!result.Succeeded)
             {
@@ -53,28 +54,29 @@ namespace ECommerce.Business.Services
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("User {Identifier} logged in.", userToCreate.Email);
 
-            var authResponseDto = new AuthResponse
+            var authResponse = new AuthResponse
             {
                 AccessToken = accessToken,
                 UserId = userToCreate.Id,
                 FullName = $"{userToCreate.FirstName} {userToCreate.LastName}",
                 Email = userToCreate.Email!,
-                Roles = roles
+                Roles = roles,
+                AvatarUrl = userToCreate.AvatarUrl,
             };
-            return (authResponseDto, refreshToken.Token, refreshToken.ExpiresOn);
+            return (authResponse, refreshToken.Token, refreshToken.ExpiresOn);
         }
 
-        public async Task<(AuthResponse, string, DateTime)> LoginAsync(LoginRequest loginRequestDto)
+        public async Task<(AuthResponse, string, DateTime)> LoginAsync(LoginRequest loginRequest)
         {
             //Authenticate User from databse
             ApplicationUser? user;
-            if (loginRequestDto.Identifier.Contains('@'))
+            if (loginRequest.Identifier.Contains('@'))
             {
-                user = await _userManager.FindByEmailAsync(loginRequestDto.Identifier);
+                user = await _userManager.FindByEmailAsync(loginRequest.Identifier);
             }
             else
             {
-                user = await _userManager.FindByNameAsync(loginRequestDto.Identifier);
+                user = await _userManager.FindByNameAsync(loginRequest.Identifier);
             }
 
             if (user is null)
@@ -84,7 +86,7 @@ namespace ECommerce.Business.Services
                 throw new UnauthorizedException("Account is locked. Try again in 15 minutes.");
 
 
-            var isValidPassword = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
+            var isValidPassword = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
 
             // Lockout ( If password entered invalid many time, lock the user out)
             if (!isValidPassword)
@@ -104,7 +106,7 @@ namespace ECommerce.Business.Services
             var roles = await _userManager.GetRolesAsync(user);
             var accessToken = _tokenService.CreateAccessToken(user, roles);
             // 2. Generate Refresh Token (Based on RememberMe)
-            var refreshToken = _tokenService.GenerateRefreshToken(user.Id, loginRequestDto.RememberMe);
+            var refreshToken = _tokenService.GenerateRefreshToken(user.Id, loginRequest.RememberMe);
             //Check if there are old revoked tokens and clean them up
             var junkTokens = await _context.RefreshTokens
                 .Where(t => t.UserId == user.Id && (t.ExpiresOn <= DateTime.UtcNow || t.RevokedOn != null))
@@ -120,15 +122,16 @@ namespace ECommerce.Business.Services
             if (_logger.IsEnabled(LogLevel.Information))
                 _logger.LogInformation("User {Identifier} logged in.", user.Email);
 
-            var authResponseDto = new AuthResponse
+            var authResponse = new AuthResponse
             {
                 AccessToken = accessToken,
                 UserId = user.Id,
                 FullName = $"{user.FirstName} {user.LastName}",
                 Email = user.Email!,
-                Roles = roles
+                Roles = roles,
+                AvatarUrl = user.AvatarUrl,
             };
-            return (authResponseDto, refreshToken.Token, refreshToken.ExpiresOn);
+            return (authResponse, refreshToken.Token, refreshToken.ExpiresOn);
         }
 
         public async Task<(AuthResponse, string, DateTime)> RefreshTokenAsync(string refreshToken)
@@ -160,15 +163,16 @@ namespace ECommerce.Business.Services
             _context.RefreshTokens.Add(newRefreshToken);
             await _context.SaveChangesAsync();
 
-            var authResponseDto = new AuthResponse
+            var authResponse = new AuthResponse
             {
                 AccessToken = newAccessToken,
                 UserId = existingToken.User.Id,
                 FullName = $"{existingToken.User.FirstName} {existingToken.User.LastName}",
                 Email = existingToken.User.Email!,
-                Roles = roles
+                Roles = roles,
+                AvatarUrl = existingToken.User.AvatarUrl,
             };
-            return (authResponseDto, newRefreshToken.Token, newRefreshToken.ExpiresOn);
+            return (authResponse, newRefreshToken.Token, newRefreshToken.ExpiresOn);
 
 
         }

@@ -8,8 +8,8 @@ namespace ECommerce.Business.Interfaces
         Task<IEnumerable<ReviewSummaryDto>> GetAllReviewsAsync(string? ratingFilter);
         Task<IEnumerable<ReviewProductSummaryDto>> GetAllProductReviewsAsync(int productId);
         Task MarkHelpfulAsync(int reviewId);
-        Task<ReviewProductSummaryDto> AddReviewAsync(int productId, AddReviewRequest request);
-        Task<ReviewSummaryDto> UpdateReviewAsync(int reviewId, UpdateReviewRequest request);
+        Task<ReviewProductSummaryDto> AddReviewAsync(int productId, AddReviewRequest addReviewRequest);
+        Task<ReviewSummaryDto> UpdateReviewAsync(int reviewId, UpdateReviewRequest updateReviewRequest);
         Task DeleteReviewAsync(int reviewId);
     }
 }

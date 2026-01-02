@@ -8,6 +8,8 @@ namespace ECommerce.Data.Config
     {
         public void Configure(EntityTypeBuilder<Address> builder)
         {
+            builder.HasQueryFilter(a => !a.User.IsDeleted);
+
             builder.Property(a => a.FullName).HasMaxLength(50);
             builder.Property(a => a.MobileNumber).HasColumnType("VARCHAR").HasMaxLength(15);
             builder.Property(a => a.Label).HasMaxLength(50);

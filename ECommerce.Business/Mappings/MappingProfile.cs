@@ -27,8 +27,7 @@ namespace ECommerce.Business.Mappings
         {
             //Auth Mapping
             CreateMap<RegisterRequest, ApplicationUser>()
-                .ForMember(d => d.Created, o => o.MapFrom(s => DateTime.UtcNow))
-                .ForMember(d => d.Updated, o => o.MapFrom(s => DateTime.UtcNow));
+                .ForMember(d => d.Created, o => o.MapFrom(s => DateTime.UtcNow));
 
             //Brand Mapping
             CreateMap<Brand, AdminBrandSummaryDto>()
@@ -175,6 +174,10 @@ namespace ECommerce.Business.Mappings
             CreateMap<Review, ReviewProductSummaryDto>()
                 .ForMember(d => d.UserAvatarUrl, o => o.MapFrom(s => s.User.AvatarUrl))
                 .ForMember(d => d.UserName, o => o.MapFrom(s => $"{s.User.FirstName} {s.User.LastName}"));
+
+            //Users Mapping
+            CreateMap<ApplicationUser, UserDetailsResponse>();
+
         }
     }
 }

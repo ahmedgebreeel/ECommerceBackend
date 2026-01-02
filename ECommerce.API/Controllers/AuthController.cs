@@ -25,9 +25,9 @@ namespace ECommerce.API.Controllers
         [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequestDto)
         {
-            var (authResponseDto, refreshToken, refreshTokenExpiration) = await _authService.RegisterAsync(registerRequestDto);
+            var (authResponse, refreshToken, refreshTokenExpiration) = await _authService.RegisterAsync(registerRequestDto);
             SetRefreshTokenCookie(refreshToken, refreshTokenExpiration);
-            return StatusCode(StatusCodes.Status201Created, authResponseDto);
+            return StatusCode(StatusCodes.Status201Created, authResponse);
         }
 
         [HttpPost("[action]")]
@@ -40,9 +40,9 @@ namespace ECommerce.API.Controllers
         [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Login([FromBody] LoginRequest dto)
         {
-            var (authResponseDto, refreshToken, refreshTokenExpiration) = await _authService.LoginAsync(dto);
+            var (authResponse, refreshToken, refreshTokenExpiration) = await _authService.LoginAsync(dto);
             SetRefreshTokenCookie(refreshToken, refreshTokenExpiration);
-            return Ok(authResponseDto);
+            return Ok(authResponse);
         }
 
         [HttpPost("refresh-token")]
@@ -66,11 +66,11 @@ namespace ECommerce.API.Controllers
                     Message = "No refresh token provided."
                 });
             }
-            var (authResponseDto, refreshToken, refreshTokenExpiration) = await _authService.RefreshTokenAsync(existigRefreshToken);
+            var (authResponse, refreshToken, refreshTokenExpiration) = await _authService.RefreshTokenAsync(existigRefreshToken);
 
             SetRefreshTokenCookie(refreshToken, refreshTokenExpiration);
 
-            return Ok(authResponseDto);
+            return Ok(authResponse);
         }
 
         [HttpPost("revoke-token")]

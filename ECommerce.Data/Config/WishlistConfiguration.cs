@@ -8,6 +8,7 @@ namespace ECommerce.Data.Config
     {
         public void Configure(EntityTypeBuilder<Wishlist> builder)
         {
+            builder.HasQueryFilter(w => !w.User.IsDeleted);
             //One to Many relation with WishlistItem ( Wishlist (1) -> (N) WishlistItem )
             builder.HasMany(w => w.Items)
                 .WithOne(wi => wi.Wishlist)
